@@ -30,18 +30,21 @@
     <!-- Main content -->
     <section class="content">
         <!-- Content Header (Page header) -->
+        <!-- ujumbe ikiwa session haitokamilika  -->
         @if(session()->has('error'))
         <div class="alert alert-danger alert-dismissible">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <p color="white">{{ session()->get('error') }}
         </div>
         @endif
-        @if(session()->has('message'))
+
+        <!-- ujumbe ikiwa session itakamilika -->
+        <!-- @if(session()->has('message'))
         <div class="alert alert-success alert-dismissible">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <p color="white">{{ session()->get('message') }}
         </div>
-        @endif
+        @endif -->
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">

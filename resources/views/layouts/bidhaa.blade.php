@@ -107,20 +107,18 @@
 
                             @endif
                             <td>
-                                @if($p->quantity <= 10) 
-                                <b style="color:red;">{{ $p->quantity }}</b>
-                                @else
-                                <b style="color:green;">{{ $p->quantity }}</b>
-                                @endif
+                                @if($p->quantity <= 10) <b style="color:red;">{{ $p->quantity }}</b>
+                                    @else
+                                    <b style="color:green;">{{ $p->quantity }}</b>
+                                    @endif
 
                             </td>
                             <td>
-                                @if($p->pprofit <= 0)
-                                <b style="color:red;">{{ $p->pprofit }}</b>
-                                @else
-                                {{ $p->pprofit }}
-                                @endif
-                            
+                                @if($p->pprofit <= 0) <b style="color:red;">{{ $p->pprofit }}</b>
+                                    @else
+                                    {{ $p->pprofit }}
+                                    @endif
+
                             </td>
                             <td>{{ $p->discount }}%</td>
                             <td>{{ $p->capital }}</td>
@@ -235,6 +233,13 @@
                                                         </select>
 
                                                     </div>
+                                                    <div class="col col-md-6 d-nones" id="kupimwa">
+                                                        <label>idadi(kupimwa Jumla)</label>
+                                                        <input type="number" name="sub_quantity" min="0" step="0.25"
+                                                            value="0" class="form-control"
+                                                            placeholder="weka punguzo la bidhaa..." required>
+
+                                                    </div>
                                                     @if(!@empty($p->sub_amount))
                                                     <div class="col col-md-6">
                                                         <label>bei kipimo</label>
@@ -345,7 +350,7 @@
                         </div>
                         <div class="col col-md-6">
                             <label>Kipengele</label>
-                            <select class="form-control" name="category"  onchange="enanbleCategory(this)">
+                            <select class="form-control" name="category" onchange="enanbleCategory(this)">
                                 <option disabled selected value>---</option>
                                 @foreach ($categories as $role)
                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
