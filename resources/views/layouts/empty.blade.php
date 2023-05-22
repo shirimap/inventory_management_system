@@ -26,9 +26,6 @@
         <!-- Small boxes (Stat box) -->
 
 
-        <!-- your content here -->
-
-        
         <!-- /.row -->
       </div><!-- /.container-fluid -->
     </section>

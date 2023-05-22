@@ -15,7 +15,7 @@ class ShopInfoTable extends Seeder
     {
         $date = Carbon::now();
         $user = ShopInfo::create([
-            'name' => 'GIRAFFE SHAPERS COMPANY LIMITED',
+            'name' => 'KIMARO  COMPANY LIMITED',
             'logo' => 'images/logo.jpg',
             'slogan'=>'Hub For Smart Builders',
             'created_at'=> $date,

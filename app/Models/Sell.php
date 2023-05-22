@@ -13,13 +13,14 @@ class Sell extends Model
         'total_amount',
         'invoice',
         'sales_date',
+        'product_id'
+      
     ];
 
     public function order(){
         return $this->belongsTo(Order::class);
        }
        public function product(){
-
 
         return $this->belongsTo(Product::class);
        }

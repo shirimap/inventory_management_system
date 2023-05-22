@@ -1,19 +1,19 @@
 @include('includes/header')
 @include('includes/nav')
+@include('sweetalert::alert')
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Dashboard</h1>
+                    <h1 class="m-0 text-dark">Nyumbani</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Dashboard v1</li>
+                        <li class="breadcrumb-item active">Nyumbani</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -23,249 +23,262 @@
 
     <!-- Main content -->
     <section class="content">
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
-        @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3>{{ $user->count() }}</h3>
-                            <p>Wauzaji</p>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Wauzaji</span>
+                            <span class="info-box-number">
+                                <h4> {{ $user->count() }}</h4>
+                                <small class="pull-right"><a href="#" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <!-- /.info-box-content -->
                     </div>
+                    <!-- /.info-box -->
                 </div>
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-primary">
-                        <div class="inner">
-                            <h3>{{ $product->count() }}</h3>
-
-                            <p>Bidhaa</p>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-users"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Bidhaa</span>
+                            <span class="info-box-number">
+                                <h4> {{ $product->count() }}</h4>
+                                <small class="pull-right"><a href="#" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
                         </div>
-                        <div class="icon">
-                            <i class="ion ion-bag"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <!-- /.info-box-content -->
                     </div>
+                    <!-- /.info-box -->
                 </div>
-                <!-- ./col -->
+                
 
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>{{ $order }}<sup style="font-size: 20px"> TZS</sup></h3>
-
-                            <p>Mauzo</p>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-primary elevation-1"> <i class="fas fa-shopping-cart"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Mauzo</span>
+                            <span class="info-box-number">
+                                <h4>{{ $sell }}<sup style="font-size: 12px"> TZS</sup></h4>
+                                <small class="pull-right"><a href="#" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <!-- /.info-box-content -->
                     </div>
+                    <!-- /.info-box -->
                 </div>
-                <!-- ./col -->
 
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3>{{ $dina }}<sup style="font-size: 20px"> TZS</sup></h3>
-
-                            <p>Mtaji</p>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-danger elevation-1"> <i class="fas fa-shopping-cart"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">thamani Mzigo Uliopo</span>
+                            <span class="info-box-number">
+                                <h4>{{ $dina }}<sup style="font-size: 12px"> TZS</sup></h4>
+                                <small class="pull-right"><a href="#" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
                         </div>
-                        <div class="icon">
-                            <i class="ion ion-pie-graph"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <!-- /.info-box-content -->
                     </div>
+                    <!-- /.info-box -->
                 </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3>{{ $pprofit }}<sup style="font-size: 20px"> TZS</sup></h3>
-
-                            <p>Faida</p>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-danger elevation-1"> <i class="fas fa-shopping-cart"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Faida</span>
+                            <span class="info-box-number">
+                            <h4>{{ $pprofit }}<sup style="font-size: 12px"> TZS</sup></h4>
+                                <small class="pull-right"><a href="#" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
                         </div>
-                        <div class="icon">
-                            <i class="ion ion-pie-graph"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <!-- /.info-box-content -->
                     </div>
+                    <!-- /.info-box -->
                 </div>
-                <!-- ./col -->
+              
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-info elevation-1"> <i class="ion ion-pie-graph"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Mauzo Ya Leo</span>
+                            <span class="info-box-number">
+                                <h4>{{ $todaysales}} <sup style="font-size: 12px"> TZS</sup></h4>
+                                <small class="pull-right"><a href="#" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- AREA CHART -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Graph Ya Mauzo</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart">
+                                <canvas id="areaChart"
+                                    style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+
+
+                </div>
+                <!-- /.col (LEFT) -->
+                <div class="col-md-6">
+                    <!-- BAR CHART -->
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <h3 class="card-title">Graph Ya Mauzo</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart">
+                                <canvas id="barChart"
+                                    style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                    <!-- Profile Image -->
+                    
+
+                </div>
+                <!-- /.col (RIGHT) -->
             </div>
             <!-- /.row -->
-            <!-- Main row -->
-            <div class="row">
-          <div class="col-md-6">
-            <!-- AREA CHART -->
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Area Chart</h3>
 
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                  <canvas id="areaChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 326px;" width="326" height="250" class="chartjs-render-monitor"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- DONUT CHART -->
-            <div class="card card-danger">
-              <div class="card-header">
-                <h3 class="card-title">Donut Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 326px;" width="326" height="250" class="chartjs-render-monitor"></canvas>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- PIE CHART -->
-            <div class="card card-danger">
-              <div class="card-header">
-                <h3 class="card-title">Pie Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 326px;" width="326" height="250" class="chartjs-render-monitor"></canvas>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-          </div>
-          <!-- /.col (LEFT) -->
-          <div class="col-md-6">
-            <!-- LINE CHART -->
-            <div class="card card-info">
-              <div class="card-header">
-                <h3 class="card-title">Line Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                  <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 326px;" width="326" height="250" class="chartjs-render-monitor"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- BAR CHART -->
-            <div class="card card-success">
-              <div class="card-header">
-                <h3 class="card-title">Bar Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                  <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 326px;" width="326" height="250" class="chartjs-render-monitor"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- STACKED BAR CHART -->
-            <div class="card card-success">
-              <div class="card-header">
-                <h3 class="card-title">Stacked Bar Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                  <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 326px;" width="326" height="250" class="chartjs-render-monitor"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-          </div>
-          <!-- /.col (RIGHT) -->
         </div>
-            <!-- /.row (main row) -->
-        </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-    </section>
+        <!-- /.col -->
+
+
+</section>
+<!-- /.content -->
+</section>
 
 
 </div>
 <!-- /.content-wrapper -->
+<script>
+$(function() {
+    /* ChartJS
+     * -------
+     * Here we will create a few charts using ChartJS
+     */
+
+    //--------------
+    //- AREA CHART -
+    //--------------
+
+    // Get context with jQuery - using jQuery's .get() method.
+    var areaChartCanvas = $('#areaChart').get(0).getContext('2d')
+
+    var areaChartData = {
+        labels: <?php echo json_encode($labels)?>,
+        datasets: [{
+                label: 'Mauzo',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                pointRadius: false,
+                pointColor: '#3b8bba',
+                pointStrokeColor: 'rgba(60,141,188,1)',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data: <?php echo json_encode($amounts)?>
+            },
+            {}
+        ]
+    }
+
+    var areaChartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: false,
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: false,
+                }
+            }]
+        }
+    }
+
+    // This will get the first returned node in the jQuery collection.
+    new Chart(areaChartCanvas, {
+        type: 'line',
+        data: areaChartData,
+        options: areaChartOptions
+    })
+
+
+
+
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var barChartCanvas = $('#barChart').get(0).getContext('2d')
+    var barChartData = $.extend(true, {}, areaChartData)
+    var temp0 = areaChartData.datasets[0]
+    var temp1 = areaChartData.datasets[1]
+    barChartData.datasets[0] = temp1
+    barChartData.datasets[1] = temp0
+
+    var barChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        datasetFill: false
+    }
+
+    new Chart(barChartCanvas, {
+        type: 'bar',
+        data: barChartData,
+        options: barChartOptions
+    })
+
+
+})
+</script>
 @include('includes/footer')

@@ -3,7 +3,7 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
+import swal from 'sweetalert';
 require('./bootstrap');
 
 window.Vue = require('vue').default;
@@ -30,3 +30,23 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 const app = new Vue({
     el: '#app',
 });
+
+
+    function confirmDelete(id) {
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this data!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                // if user confirms delete, submit the delete request
+                document.getElementById('delete-form-' + id).submit();
+            } else {
+                // if user cancels delete, do nothing
+                swal("Your data is safe!");
+            }
+        });
+    }

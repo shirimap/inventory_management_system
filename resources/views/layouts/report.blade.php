@@ -1,5 +1,6 @@
 @include('includes/header')
 @include('includes/nav')
+@include('sweetalert::alert')
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -19,44 +20,45 @@
             </div><!-- /.row -->
             <div class="row mb-2">
                 <div class="col-sm-12">
-                    <div>
-                        {{--  <div class="input-group">  --}}
-                            <label style="margin-top: 7px; padding-right:4px;">Chagua Muda wa Ripoti:</label>
-                            {{--  <button type="button" class="btn btn-default float-right" id="daterange-btn">
-                                <i class="far fa-calendar-alt"></i> Kiteua Muda
-                                <i class="fas fa-caret-down"></i>
-                            </button>  --}}
-                            <form  action="{{route('report')}}" method ="">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{{route('report')}}" method="">
                                 @csrf
-                                <br>
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="container-fluid">
-                                            <div class="form-group row">
-                                                <label for="date" class="col-form-label col-sm-2">Tarehe ya kuanzia</label>
-                                                <div class="col-sm-3">
-                                                    <input type="date" class="form-control input-sm" id="fromDate" name="fromDate" required/>
-                                                </div>
-                                                <label for="date" class="col-form-label col-sm-2">Tarehe ya kuishia</label>
-                                                <div class="col-sm-3">
-                                                    <input type="date" class="form-control input-sm" id="toDate" name="toDate" required/>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="date" class="col-form-label col-sm-2">Other</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control input-sm" id="other" name="other"placeholder="Search other..." />
-                                                </div>
-                                                <div class="col-sm-2">
-                                                    <button type="submit" class="btn btn-primary" name="search" title="Search">Search</button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="date" class="col-form-label">Tarehe ya
+                                            kuanzia</label>
+                                        <input type="date" class="form-control input-sm" id="fromDate" name="fromDate"
+                                            required />
                                     </div>
+
+                                    <div class="col-3">
+                                        <label for="date" class="col-form-label">Tarehe ya
+                                            kuishia</label>
+                                        <input type="date" class="form-control input-sm" id="toDate" name="toDate"
+                                            required />
+                                    </div>
+                                    
+                                    <div class="col-3">
+                                        
+                                        <button  type="submit" class="btn btn-primary form-control" name="search"
+                                            title="Search">Search</button>
+                                        <a type="submit" href="{{route('reportPrint')}}" class="btn btn-warning form-control"
+                                            >Print</a>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="">Mauzo</label>
+                                        <h1><b>{{$pius}}/=</b></h1>
+                                    </div>
+
+
+
                                 </div>
-                                <br>
+
                             </form>
-                        {{--  </div>  --}}
+                        </div>
+
                     </div>
 
                 </div><!-- /.col -->
@@ -71,84 +73,60 @@
             <!-- Small boxes (Stat box) -->
             <div class="row">
                 <div class="col-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title"><span class="fa fa-file-text-o"></span> Report</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Jina</th>
+                                        <th>Aina</th>
+                                        <th>idadi</th>
+                                        <th>kiasi</th>
+                                        <th>Jumla</th>
+                                        <th>Tawi</th>
+                                        <th>Kipengele</th>
+                                        <th>Mfanyakazi</th>
+                                        <th>Tarehe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($query as $q)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{ $q->product->sbidhaa->name }}</td>
+                                        <td>{{ $q->product->sbidhaa->type }}</td>
+                                        <td> {{ $q->quantity }} </td>
+                                        <td>{{ $q->amount }}</td>
+                                        <td>{{$q->amount }}</td>
+                                        <td> {{ $q->product->branch->name }}</td>
+                                        <td>{{ $q->product->category->name }}</td>
+                                        <td></td>
+                                        <td>{{ $q->created_at }}</td>
+                                    </tr>
 
-            <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Report</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th>JIna</th>
-                      <th>Aina</th>
-                      <th>idadi</th>
-                      <th>kiasi</th>
-                      <th>Tawi</th>
-                      <th>Kipengele</th>
-                      <th>Tarehe</th>
-                      <th>Mfanyakazi</th>
-                      <th>Mteja</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($query as $q)
+                                    @endforeach
 
-
-                    <tr>
-                      <td>{{ $q->product->name }}</td>
-                      <td>{{ $q->product->type }}</td>
-                      <td>
-                        {{ $q->quantity }}
-                      </td>
-                      <td>{{ $q->amount }}</td>
-                      <td> {{ $q->product->branch->name }}</td>
-                      <td>{{ $q->product->category->name }}</td>
-                      <td>{{ $q->created_at->format('d/m/Y') }}</td>
-                      <td>{{ $q->order->user->first_name }}</td>
-                      <td>{{ $q->order->customer_name }}</td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <th>JIna</th>
-                        <th>Aina</th>
-                        <th>idadi</th>
-                        <th>kiasi</th>
-                        <th>Tawi</th>
-                        <th>Kipengele</th>
-                        <th>Tarehe</th>
-                        <th>Mfanyakazi</th>
-                        <th>Mteja</th>
-                    </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                <!-- /.card-body -->
-                </div><!-- /.col -->
-            </div><!-- /.row -->
+                                </tbody>
 
 
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-{{--  <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.0.5
-    </div>
-  </footer>  --}}
-  </div>
-
 
 <!-- ./wrapper -->
-
-
-
 @include('includes/footer')

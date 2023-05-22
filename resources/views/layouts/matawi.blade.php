@@ -1,6 +1,6 @@
 @include('includes/header')
 @include('includes/nav')
-
+@include('sweetalert::alert')
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><span class="fa fa-map-marker"></span> Matawi</h1>
+                    <h1 class="m-0 text-dark"><span class="fa fa-th"></span> Matawi</h1>
                 </div><!-- /.col -->
 
                 <div class="col-sm-6">
@@ -25,43 +25,29 @@
 
     <!-- Main content -->
     <section class="content">
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
-        @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif
+      
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
 
-            <div class="card card-secondary card-outline">
+            <div class="card card-primary">
                 @can('ongeza-tawi')
                 <div class="card-header">
-                    <h3 class="card-title">Matawi yaliyopo</h3>
-                    <button type="button" class="btn btn-success float-right" data-toggle="modal"
+                    <h3 class="card-title"><span class="fa fa-th"></span> Matawi yaliyopo</h3>
+                    <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal"
                         data-target="#modal-md"> <span class="fa fa-plus"></span> Ongeza tawi</button>
                 </div>
                 @endcan
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example1" class="table table-sm table-bordered table-striped">
+                    <table id="example3" class="table table-hover">
                         <thead>
-
                             <tr>
-                                <th>S/no</th>
+                                <th>#</th>
                                 <th>Jina la tawi</th>
                                 <th>Eneo</th>
                                 <th>Anuani</th>
                                 <th>Namba ya simu</th>
                                 <th>Parua Pepe</th>
-
                                 <th>Idadi ya wauzaji</th>
                                 <th>Kitendo</th>
                             </tr>
@@ -80,12 +66,17 @@
                                     @can('hariri-tawi')
                                     <a type="button" class="btn btn-sm btn-primary" style="color:white;"
                                         data-toggle="modal" data-target="#modal-secondary{{ $branch->id }}"><span
-                                            class="fa fa-edit"></span></a>
+                                            class="fa fa-edit"></span>Hariri</a>
                                     @endcan
                                     @can('futa-tawi')
-                                    <a type="button" class="btn btn-sm btn-danger" style="color:white;"
-                                        data-toggle="modal" data-target="#modal-danger{{ $branch->id }}"><span
-                                            class="fa fa-trash"></span></a>
+                                    <button  onclick="deleteConfirmation({{ $branch->id }})"
+                                        class="btn btn-danger btn-sm"><span
+                                            class="fa fa-trash"> Futa</button>
+                                    <form id="delete-form-{{ $branch->id }}" action="matawi/edit/{{ $branch->id }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>                                  
                                     @endcan
                                 </td>
                                 <!-- modal -->
@@ -122,12 +113,12 @@
                                     <!-- /.modal-dialog -->
                                 </div>
 
-
                                 <div class="modal fade" id="modal-secondary{{ $branch->id }}">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Hariri Tawi</h4>
+                                            <div class="modal-header bg-primary">
+                                                <h4 class="modal-title"><span
+                                            class="fa fa-edit"></span> Hariri Tawi</h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -138,8 +129,7 @@
                                                     {{ csrf_field() }}
 
                                                     <input type="hidden" name="proid" value="{{ $branch->id }}">
-                                                    <p>Tawi hili Litafutwa </p>
-
+                                                    
                                                     <p>
                                                     <div class="row">
                                                         <div class="col col-md-12">
@@ -180,10 +170,10 @@
                                                     </p>
                                             </div>
                                             <div class="modal-footer justify-content-between">
-                                                <button type="button" class="btn btn-outline-light"
+                                                <button type="button" class="btn btn-danger"
                                                     data-dismiss="modal">Funga</button>
                                                 <button type="submit" name="remove"
-                                                    class="btn btn-outline-light">Hariri</button>
+                                                    class="btn btn-primary">Hariri</button>
 
                                             </div>
                                             </form>
@@ -194,9 +184,6 @@
                                     </div>
                                     <!-- /.modal-dialog -->
                                 </div>
-
-
-
                                 </td>
                             </tr>
 
@@ -214,10 +201,10 @@
     <form method="POST" action="{{ route('matawi.add') }}">
         {{ csrf_field() }}
         <div class="modal fade" id="modal-md">
-            <div class="modal-dialog modal-md">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Ongeza Tawi</h4>
+                    <div class="modal-header bg-primary">
+                        <h4 class="modal-title"><span  class="fa fa-plus"></span> Ongeza Tawi</h4>
                         <button type="button" class="close" data-dismiss="modal-body" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -261,7 +248,7 @@
                         </p>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <input type="submit" class="btn btn-default" value="Funga" data-dismiss="modal">
+                        <input type="submit" class="btn btn-danger" value="Funga" data-dismiss="modal">
                         <input type="submit" class="btn btn-primary" value="Ongeza">
                     </div>
                 </div>
@@ -273,11 +260,12 @@
     </form>
 
     @if(session()->has('error'))
-        <script>
-            toastr.info('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
-        </script>
+    <script>
+    toastr.info('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    </script>
     @endif
 </div>
+
 
 <!-- /.content-wrapper -->
 @include('includes/footer')

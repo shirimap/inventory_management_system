@@ -1,6 +1,6 @@
 @include('includes/header')
 @include('includes/nav')
-
+@include('sweetalert::alert')
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><span class="fa fa-male"></span> Wauzaji</h1>
+                    <h1 class="m-0 text-dark"><span class="fa fa-th"></span> Wauzaji</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -24,32 +24,19 @@
 
     <!-- Main content -->
     <section class="content">
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
-        @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
-
-            <div class="card card-secondary card-outline">
+            <div class="card card-primary">
                 @can('ongeza-muuzaji')
                 <div class="card-header">
-                    <h3 class="card-title"> Wauzaji waliopo</h3>
+                    <h3 class="card-title"><span class="fa fa-th"></span> Wauzaji waliopo</h3>
                     <button type="button" class="btn btn-success float-right" data-toggle="modal"
                         data-target="#modal-lgg"> <span class="fa fa-plus"></span> Ongeza muuzaji</button>
                 </div>
                 @endcan
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example1" class="table table-sm table-bordered table-striped">
+                    <table id="example3" class="table  table-hover">
                         <thead>
                             <tr>
                                 <th>S/no</th>
@@ -66,7 +53,6 @@
                         <tbody>
                             @foreach ($user as $user)
                             @if (!empty($user->branch->name))
-
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $user->first_name }} {{ $user->last_name }}</td>
@@ -74,23 +60,20 @@
                                 <td>{{ $user->phone}}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->gender}}</td>
-
                                 <td>{{ $user->branch->name }}</td>
-
-
                                 @foreach($user->getRoleNames() as $v)
                                 <td>{{ $v }}</td>
                                 @endforeach
                                 <td>
                                     @can('hariri-muuzaji')
-                                    <a type="button" class="btn btn-sm btn-secondary" style="color:white"
+                                    <a type="button" class="btn btn-sm btn-primary" style="color:white"
                                         data-toggle="modal" data-target="#modal-secondary{{ $user->id }}"><span
-                                            class="fa fa-edit"></span></a>
+                                            class="fa fa-edit"></span>Hariri</a>
                                     @endcan
                                     @can('futa-muuzaji')
                                     <a type="button" class="btn btn-sm btn-danger" style="color:white"
                                         data-toggle="modal" data-target="#modal-danger{{ $user->id }}"><span
-                                            class="fa fa-trash"></span></a>
+                                            class="fa fa-trash"></span>Futa</a>
                                     @endcan
                                 </td>
                                 <div class="modal fade" id="modal-danger{{ $user->id }}">
@@ -116,11 +99,8 @@
                                                     data-dismiss="modal">Funga</button>
                                                 <button type="submit" name="remove"
                                                     class="btn btn-outline-light">Futa</button>
-
                                             </div>
                                             </form>
-
-
                                         </div>
                                         <!-- /.modal-content -->
                                     </div>
@@ -129,10 +109,11 @@
 
 
                                 <div class="modal fade" id="modal-secondary{{ $user->id }}">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content bg-secondary">
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Hariri Muuzaji</h4>
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header  bg-primary">
+                                                <h4 class="modal-title"><span
+                                            class="fa fa-edit"></span>Hariri Muuzaji</h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -141,9 +122,7 @@
                                             <div class="modal-body">
                                                 <form method="POST" action="wauzaji/edit/{{ $user->id }}">
                                                     {{ csrf_field() }}
-
                                                     <input type="hidden" name="proid" value="{{ $user->id }}">
-                                                    <p>Hariri Muuzaji </p>
 
                                                     <p>
                                                     <div class="row">
@@ -198,25 +177,16 @@
                                                             <label>Jukumu</label>
                                                             <select class="form-control" name="roles">
                                                                 <option disabled selected value>--</option>
-
                                                                 @foreach ($roles as $role)
-
                                                                 @if (!empty($user->roles->first()->name) && ($role->name
                                                                 == $user->roles->first()->name))
-
-
-
                                                                 <option value="{{ $user->roles->first()->name }}"
                                                                     selected>{{ $user->roles->first()->name }}</option>
                                                                 @else
-
                                                                 <option value="{{ $role->id }}">{{ $role->name }}
                                                                 </option>
                                                                 @endif
-
                                                                 @endforeach
-
-
                                                             </select>
                                                         </div>
                                                         <div class="col col-md-6">
@@ -231,10 +201,7 @@
                                                                 <option value="{{ $role->id }}">{{ $role->name }}
                                                                 </option>
                                                                 @endif
-
                                                                 @endforeach
-
-
                                                             </select>
                                                         </div>
                                                     </div>
@@ -243,9 +210,7 @@
                                         <label>Chagua tawi</label>
                                         <select class="form-control" name="selectbranch">
                                           <option>--</option>
-
                                             <option>branchname</option>
-
                                         </select>
                                       </div>
                                       <div class="col col-md-6">
@@ -259,15 +224,13 @@
                                                     </p>
                                             </div>
                                             <div class="modal-footer justify-content-between">
-                                                <button type="button" class="btn btn-outline-light"
+                                                <button type="button" class="btn btn-danger"
                                                     data-dismiss="modal">Funga</button>
                                                 <button type="submit" name="remove"
-                                                    class="btn btn-outline-light">Hariri</button>
+                                                    class="btn btn-primary">Hariri</button>
 
                                             </div>
                                             </form>
-
-
                                         </div>
                                         <!-- /.modal-content -->
                                     </div>
@@ -282,8 +245,6 @@
                 </div>
                 <!-- /.card-body -->
             </div>
-
-
             <!-- /.row -->
         </div><!-- /.container-fluid -->
     </section>
@@ -291,10 +252,10 @@
     <form method="post" action="{{ route('wauzaji.create') }}">
         @csrf
         <div class="modal fade" id="modal-lgg">
-            <div class="modal-dialog modal-lgg">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Ongeza Muuzaji</h4>
+                    <div class="modal-header bg-primary">
+                        <h4 class="modal-title"><i class="fas fa-plus"></i> Ongeza Muuzaji</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -348,8 +309,6 @@
                                     @foreach ($roles as $role)
                                     <option value="{{ $role->name }}">{{ $role->name }}</option>
                                     @endforeach
-
-
                                 </select>
                             </div>
                             <div class="col col-md-6">
@@ -359,33 +318,14 @@
                                     @foreach ($branch as $role)
                                     <option value="{{ $role->id }}">{{ $role->name }}</option>
                                     @endforeach
-
-
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="row">
-                  <div class="col col-md-6">
-                    <label>Chagua tawi</label>
-                    <select class="form-control" name="selectbranch">
-                      <option>--</option>
 
-                    	<option>branchname</option>
-
-                    </select>
-                  </div>
-                  <div class="col col-md-6">
-                    <label>Chagua jukumu</label>
-                    <select class="form-control" name="rolename">
-                      <option>Muuzaji</option>
-                      <option>Msimamizi</option>
-                    </select>
-                  </div>
-                </div> --}}
                         </p>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Funga</button>
                         <button name="add" class="btn btn-primary">Ongeza</button>
                     </div>
                 </div>

@@ -10,8 +10,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'type',
+               
         'quantity',
         'bprice',
         'pprofit',
@@ -22,6 +21,7 @@ class Product extends Model
         'sub_quantity',
         'branch_id',
         'category_id',
+        'sbidhaa_id',
         'created_at',
         'updated_at',
     ];
@@ -30,13 +30,16 @@ class Product extends Model
     public function branch(){
         return $this->belongsTo(Branch::class);
        }
+    public function sbidhaa(){
+        return $this->belongsTo(Sbidhaa::class);
+       }
+
 
        public function category(){
         return $this->belongsTo(Category::class);
        }
 
        public function sell(){
-
 
         return $this->hasMany(Sell::class);
        }

@@ -164,6 +164,7 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         ZanySoft\LaravelPDF\PdfServiceProvider::class,
+        RealRashid\SweetAlert\SweetAlertServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -177,6 +178,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
 
     ],
 
@@ -233,7 +235,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'PDF'=> Barryvdh\DomPDF\Facade::class,
-        'PDF' => ZanySoft\LaravelPDF\Facades\PDF::class
+        'PDF' => ZanySoft\LaravelPDF\Facades\PDF::class,
+        'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
 
     ],
 

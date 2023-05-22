@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Product;
+use App\Models\Matumizi;
 use App\Models\Branch;
 use App\Models\Sales;
 use App\Models\Stock;
@@ -131,7 +132,7 @@ class ApiController extends Controller
 
         return response()->json($branch);
     }
-
+ 
     public function getBranch($id){
 
         $branch = Branch::find($id);

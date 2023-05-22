@@ -1,6 +1,6 @@
 @include('includes/header')
 @include('includes/nav')
-
+@include('sweetalert::alert')
 
 
 <!-- Content Wrapper. Contains page content -->
@@ -30,25 +30,11 @@
     <!-- Main content -->
     <section class="content">
         <!-- Content Header (Page header) -->
-        <!-- ujumbe ikiwa session haitokamilika  -->
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
 
-        <!-- ujumbe ikiwa session itakamilika -->
-        <!-- @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif -->
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <div class="card card-primary card-outline">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title"><span class="fas fa-shopping-cart "></span> Chagua ya kuweka kwenye
                                 Mkokoteni
@@ -57,11 +43,11 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <table id="example1" class="table table-sm table-bordered table-striped">
+                            <table id="example3" class="table table-sm table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>S/no</th>
-                                        <th>Jina la Bidhaa</th>
+                                        <th>#</th>
+                                        <th>Bidhaa</th>
                                         <th>Aina</th>
                                         <th>Idadi</th>
                                         <th>Bei</th>
@@ -72,32 +58,35 @@
                                 <tbody>
                                     @foreach ($product as $p )
                                     <tr>
-                                        <td style="width: 21px;">{{ $loop->iteration }}</td>
-                                        <td style="width: 150px;"> {{ $p->name }}</td>
-                                        <td style="width: 100px;"> {{ $p->type }}</td>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td style="width: 150px;"><b>{{ $p->sbidhaa->name }}</b></td>
+                                        <td style="width: 150px;"> {{ $p->sbidhaa->type }}</td>
                                         <td> @if($p->quantity <= 10) <button class="btn btn-sm btn-danger">
                                                 {{ $p->quantity }}</button>
                                                 @else
                                                 <button class="btn btn-sm btn-info">{{ $p->quantity }}</button>
                                                 @endif
                                         </td>
-                                        <td style="width:100px;"> {{ $p->net_amount }} </td>
+                                        <td style="width:100px;"> {{ $p->net_amount }}<br>
+                                            @if(!@empty($p->sub_amount))
+                                            {{  $p->sub_amount}}
+                                            @endif</td>
 
                                         <form method="post" action="addToCart/{{ $p->id }}">
                                             @csrf
-                                            <td style="width: 25%"> <input class="form-control" type="number"
-                                                    name="quantity" value="1" style="width: 50%">
+                                            <td style="width: 20%"> <input class="form-control" type="number" min="0"
+                                                    name="quantity" value="1" style="width: 100%">
                                                 @if($p->category_id == 2)
                                                 kipimo
                                                 <input class="form-control" type="number" name="sub_quantity" min="0"
-                                                    step="0.25" value="1" style="width: 50%">                                            
-                                                
+                                                    max="{{$p->sub_quantity}}" step="0.5" value="1" style="width: 100%">
+
                                                 @endif
                                             </td>
                                             <td>
                                                 @can('ongeza-mkokoteni')
                                                 <button type="submit" class="btn btn-sm btn-success">
-                                                    <span class="fas fa-plus" ></span></button>
+                                                    <span class="fas fa-plus"></span></button>
                                                 @endcan
                                         </form>
                                         </td>
@@ -116,20 +105,18 @@
                 </div>
 
                 <div class="col-sm-6">
-                    <div class="card card-primary card-outline">
+                    <div class="card card-dark">
                         <div class="card-header">
                             <h3 class="card-title"><span class="fas fa-shopping-cart "></span> Ulivoviweka kwenye
                                 Mkokoteni</h3>
-
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <table id="example1" class="table table-sm table-bordered table-striped">
+                            <table id="example" class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>S/no</th>
-                                        <th>Jina la Bidhaa</th>
-                                        <th>Aina</th>
+                                        <th>#</th>
+                                        <th>Bidhaa</th>
                                         <th>Idadi</th>
                                         <th>Bei</th>
                                         <!-- <th>Punguzo</th> -->
@@ -146,17 +133,15 @@
                                     @foreach(session('cart') as $id => $details )
                                     <?php
 
-                            $total+=($details['net_amount'] * $details['quantity'])+($details['sub_amount']* $details['sub_quantity']) ;
-                            $totals='TZS ' . number_format($total,2).'/=';
-                            ?>
+                                    $total+=($details['net_amount'] * $details['quantity'])+($details['sub_amount']* $details['sub_quantity']) ;
+                                    $totals='TZS ' . number_format($total,2).'/=';
+                                    ?>
 
                                     <?php $quantity+=$details['quantity'] ?>
                                     <tr>
-                                        <td style="width: 4%">{{ $loop->iteration }} </td>
-                                        <td style="width: 15%"> {{ $details['name'] }} </td>
-
-                                        <td style="width: 15%"> {{ $details['type'] }} </td>
-                                        <td style="width: 10%">
+                                        <td>{{$loop->iteration}}</td>
+                                        <td><b>{{ $details['sbidhaa_id'] }}</b></td>
+                                        <td>
                                             @if($details['category_id'] == 2 and $details['quantity'] > 0)
                                             {{$details['quantity'] }}.{{ $details['sub_quantity'] }}
                                             @elseif($details['category_id'] == 2)
@@ -188,17 +173,18 @@
                                         </td>
 
                                         <td>
-                                            @can('futa-mkokoteni')
-                                            <button action="submit" class="btn btn-sm btn-danger" data-toggle="modal"
-                                                data-target="#modal-danger{{ $details['id'] }}"><span
-                                                    class="fa fa-trash"></span></button>
-                                            @endcan
                                             @can('hariri-mkokoteni')
                                             <button class="btn btn-sm btn-primary" data-toggle="modal"
                                                 data-target="#modal-md3{{ $details['id'] }}">
-                                                <span class="fa fa-edit"></span></button>
+                                                <span class="fa fa-edit"></span>Hariri</button>
 
                                             @endcan
+                                            @can('futa-mkokoteni')
+                                            <button action="submit" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                data-target="#modal-danger{{ $details['id'] }}"><span
+                                                    class="fa fa-trash"></span>Futa</button>
+                                            @endcan
+
 
                                         </td>
 
@@ -237,8 +223,9 @@
                                         <div class="modal fade" id="modal-md3{{ $details['id'] }}">
                                             <div class="modal-dialog modal-md">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="modal-title">Hariri Mkokoteni</h4>
+                                                    <div class="modal-header bg-primary">
+                                                        <h4 class="modal-title"><span class="fas fa-edit"></span> Hariri
+                                                            Mkokoteni</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -291,7 +278,7 @@
                                                             </p>
                                                     </div>
                                                     <div class="modal-footer justify-content-between">
-                                                        <button type="button" class="btn btn-default"
+                                                        <button type="button" class="btn btn-danger"
                                                             data-dismiss="modal">Funga</button>
                                                         <button type="submit" class="btn btn-primary">Hariri</button>
                                                     </div>
@@ -421,7 +408,7 @@
                             </div>
                             <div class="col col-md-8">
                                 <input type="number" min="0" name="total_quantity" class="form-control"
-                                    value="{{ $quantity }}" readonly>
+                                    value="{{ $sub_quantity }}" >
                             </div>
                         </div><br>
                         <div class="row">
@@ -567,7 +554,7 @@
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
 
-                        <button type="submit" name="sell" class="btn btn-primary">Uza</button>
+                        <button type="submit" name="sell" class="btn btn-primary">Order</button>
                     </div>
 
                 </div>

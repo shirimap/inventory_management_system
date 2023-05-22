@@ -1,7 +1,7 @@
 @include('includes/header')
 @include('includes/nav')
 
-
+@include()
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">

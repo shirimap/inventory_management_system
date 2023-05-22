@@ -51,3 +51,12 @@ Route::get('showStock', [ApiController::class,'showStock']);
 Route::get('getStock/{id}', [ApiController::class,'getStock']);
 Route::post('editStock/{id}', [ApiController::class,'editStock']);
 Route::post('deleteStock/{id}', [ApiController::class,'deleteStock']);
+
+
+//Stock Matumizi
+
+Route::post('createMatumizi', [ApiController::class,'createMatumizi']);
+Route::get('showMatumizi', [ApiController::class,'showMatumizi']);
+Route::get('getMatumizi/{id}', [ApiController::class,'getMatumizi']);
+Route::post('editMatumizi/{id}', [ApiController::class,'editMatumizi']);
+Route::post('deleteMatumizi/{id}', [ApiController::class,'deleteMatumizi']);

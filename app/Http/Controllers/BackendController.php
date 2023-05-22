@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\Branch;
 use App\Models\User;
+// use App\Models\Matumizi;
+use App\Models\Sbidhaa;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Sell;
 use App\Models\ShopInfo;
 use Hash;
 use Auth;
+use DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
@@ -25,13 +29,16 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class BackendController extends Controller
 {
+
+    //==================FUNCTIONS FOR BRANCHES=====================
     public function createBranch(Request $request){
 
        $data = Branch::where('name', '=' ,$request->branchname)->where('location', '=' ,$request->location)->first();
        $date = Carbon::now();
 
        if ($data != null){
-        return back()->with('error','Jina La Tawi Tayari Lipo! Chagua Lingine');
+        Alert::error('error','Jina La Tawi Tayari Lipo! Chagua Lingine');
+        return back();
        }
 
         $validate = Validator::make($request->all(),[
@@ -45,7 +52,8 @@ class BackendController extends Controller
 
          if ($validate->fails()){
             $messages = $validate->messages();
-            return back()->with('errors','Kuna Kosa wakati wa uwekaji Taarifa');
+            Alert::error('errors','Kuna Kosa wakati wa uwekaji Taarifa');
+            return back();
          }
 
 
@@ -58,8 +66,9 @@ class BackendController extends Controller
             'phoneNumber'=>$request->phone,
             'created_at'=> $date,
         ]);
-
-        return back()->with('message','Taarifa zimeingia kikamilifu');
+        Alert::success('message','Taarifa zimeingia kikamilifu');
+        return back();
+       
     }
 
     public function deleteBranch($id){
@@ -67,13 +76,14 @@ class BackendController extends Controller
         $product = Branch::where('id',$id)->delete();
 
         if ($product){
-            return back()->with('message','Tawi limefutwa kikamilifu');
+            Alert::success('message','Tawi limefutwa kikamilifu');
+            return back();
+           
 
         }
-
-        return back()->with('error','Kuna Kosa wakati wa ufutaji wa tawi');
-
-
+        Alert::error('error','Kuna Kosa wakati wa ufutaji wa tawi');
+        return back();
+     
     }
 
     public function editBranch(Request $request,$id){
@@ -104,8 +114,15 @@ class BackendController extends Controller
           'updated_at'=>$date
       ]
   );
-  return back()->with('message','Taarifa zimebadilika kikamilifu');
+  Alert::success('message','Taarifa zimebadilika kikamilifu');
+  return back();
+
   }
+
+
+// ==================END=====================
+
+// ==================FUNCTIONS FOR USERS===========
 
   public function createUser(Request $request)
 
@@ -113,7 +130,8 @@ class BackendController extends Controller
         $date = Carbon::now();
         $data = User::where('email', '=' ,$request->email)->first();
         if ($data != null){
-            return back()->with('error','Mfanyakazi Tayari yupo Tafadhali Ongeza Mwingine');
+            Alert::error('error','Mfanyakazi Tayari yupo Tafadhali Ongeza Mwingine');
+            return back();
            }
         $validate = Validator::make($request->all(),
         [
@@ -131,7 +149,9 @@ class BackendController extends Controller
 
         if ($validate->fails()){
             $messages = $validate->messages();
-            return back()->with('error','Kuna Kosa wakati wa uwekaji Taarifa');
+            Alert::error('error','Kuna Kosa wakati wa uwekaji Taarifa');
+            return back();
+            
          }
 
 
@@ -148,8 +168,8 @@ class BackendController extends Controller
         $user->status=1;
         $user->save();
         $user->assignRole($request->input('roles'));
-
-        return back()->with('message','Mfanyakazi amewekwa kikamilifu');
+        Alert::success('message','Mfanayakazi amewekwa kikamilifu');
+        return back();
     }
 
 
@@ -177,10 +197,9 @@ class BackendController extends Controller
 
         if ($validate->fails()){
             $messages = $validate->messages();
-            return back()->with('error','kuna tatizo kwenye uwekaji taarifa');
+            Alert::error('error','Kuna Tatizo kwenye uwekaji taarifa');
+           
          }
-
-
         $user = User::find($id);
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
@@ -195,19 +214,22 @@ class BackendController extends Controller
         $user->save();
         $user->removeRole($user->roles->first()->name);
         $user->assignRole($request->input('roles'));
-
-        return back()->with('message','Mfanyakazi amewekwa kikamilifu');
+        Alert::success('message','Taafifa zimebadilishwa kikamilifu');
+        return back();
     }
     public function deleteUser($id){
 
         $product = User::where('id',$id)->delete();
 
         if ($product){
-            return back()->with('message','Mfanyakazi limefutwa kikamilifu');
+            Alert::success('message','Mfanyakazi limefutwa kikamilifu');
+            return back();
+           
 
         }
-
-        return back()->with('error','Kuna Kosa wakati wa ufutaji wa mfanyakazi');
+        Alert::success('error','Kuna Kosa wakati wa ufutaji wa mfanyakazi');
+        return back();
+   
 
 
     }
@@ -229,12 +251,12 @@ class BackendController extends Controller
 
         //    dd($user->last_login);
 
-
-            return redirect('/dashboard')->with('message','login successful');
+           Alert::success('message','login successful');
+            return redirect('/dashboard');
         }
-
-        return back()->with('error','Mtumiaje ayupo Tafadhali Hakiki taarifa zako');
-
+        Alert::error('message','Tafadhali Hakiki taarifa zako');     
+        return redirect()->back();
+        
 
 
     }
@@ -262,31 +284,24 @@ class BackendController extends Controller
 
 public function report(Request $request)
     {
-
-
         $fromDate = $request->input('fromDate');
-
-
         $toDate   = $request->input('toDate');
-
         $other    = $request->input('other');
-
-
-
-
         $role = Role::all();
         if(count($request->all()) > 0){
-            $query = Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-            return view('layouts.report',compact('query','role'));
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+            return view('layouts.report',compact('query','role','pius'));
         }
         else{
-            $query = Sell::all();
-            return view('layouts.report',compact('query','role'));
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id')->get();
+            $pius =Sell::sum('amount');
+            return view('layouts.report',compact('query','role','pius'));
         }
-
-
-
     }
+
+
+    
 
     public function delete($id)
     {
@@ -307,7 +322,9 @@ public function report(Request $request)
 
             ];
         Sell::find($id)->update($update);
-        return redirect()->back()->with('success','Has been update successfully!');
+        Alert::success('message','Taarifa zimebadilika kikamilifu');     
+        return redirect()->back();
+     
     }
 
     
@@ -315,40 +332,40 @@ public function report(Request $request)
 public function createProduct(Request $request){
     $date = Carbon::now();
     $net_amount = $request->amount - (($request->discount / 100)*$request->amount);
-     $validate = Validator::make($request->all(),[
-         'name'=>'required',
-         'type'=>'required',
+     $validate = Validator::make($request->all(),[         
          'quantity'=>'required',
          'bprice'=>'required',
          'amount'=>'required',
          'branch'=>'required',
          'category'=>'required',
+         'sbidhaa'=>'required',
          'discount'=>'required',
      ]);
      
       if ($validate->fails()){
          $messages = $validate->messages();
-         return back()->with('error','Kuna Kosa wakati wa uwekaji Taarifa');
+         Alert::error('message','Kuna Kosa wakati wa uwekaji Taarifa');
+         return redirect()->back();
       }
 
      $product = new Product;
-     $product->name =  $request->name;
-     $product->type = $request->type;
      $product->quantity = $request->quantity;
      $product->bprice = $request->bprice;
      $product->amount = $request->amount;
      $product->capital = $request->amount * $request->quantity;
-     $product->pprofit = $request->amount - $request->bprice;
+     $product->pprofit =($request->amount - $request->bprice)*$request->quantity;
      $product->sub_quantity = $request->sub_quantity;
      $product->sub_amount = $request->sub_amount;
      $product->net_amount = $net_amount;
      $product->total_quantity = $request->sub_quantity * $request->quantity;
      $product->branch_id = $request->branch;
      $product->category_id = $request->category;
+     $product->sbidhaa_id = $request->sbidhaa;
      $product->discount=$request->discount;
      $product->created_at = $date;
      $product->save();
-     return back()->with('message','Taarifa zimeingia kikamilifu');
+     Alert::success('message','Taarifa zimeingia kikamilifu');
+     return redirect()->back();
  }
 
 
@@ -358,7 +375,9 @@ public function createProduct(Request $request){
 //   dd($path);
 
   Excel::import(new ProductImport, $request->file('file'));
-  return back()->with('message','Taarifa zimebadilika kikamilifu');
+  Alert::success('message','Taarifa zimebadilika kikamilifu');     
+  return redirect()->back();
+  
 
  }
 
@@ -367,23 +386,24 @@ public function createProduct(Request $request){
     $product = Product::where('id',$id)->delete();
 
     if ($product){
-        return back()->with('message','Bidhaa limefutwa kikamilifu');
-
+        Alert::success('message','Bidhaa imefutwa kikamilifu');     
+        return redirect()->back();
     }
-
-    return back()->with('error','Kuna Kosa wakati wa ufutaji wa Bidhaa');
+    Alert::error('error','Kuna Kosa wakati wa ufuataji wa Bidhaa');     
+    return redirect()->back();
+    
 }
 
 public function editProduct(Request $request, $id){
     $date = Carbon::now();
     $net_amount = $request->amount - (($request->discount / 100)*$request->amount);
     $validate = Validator::make($request->all(),[
-        'name'=>'required',
-        'type'=>'required',
+        
         'quantity'=>'required',
         'bprice'=>'required',
         'amount'=>'required',
         'branch'=>'required',
+        'sbidhaa'=>'required',
 
     ]);
 
@@ -396,18 +416,20 @@ public function editProduct(Request $request, $id){
     $product->quantity = $request->quantity;
     $product->bprice = $request->bprice;
     $product->capital = $request->amount * $request->quantity;
-    $product->pprofit = $request->amount - $request->bprice;
+    $product->pprofit =($request->amount - $request->bprice)*$request->quantity;
     $product->sub_quantity = $request->sub_quantity;
     $product->sub_amount = $request->sub_amount;
     $product->amount = $request->amount;
     $product->net_amount = $net_amount;
     $product->branch_id = $request->branch;
+    $product->sbidhaa_id = $request->sbidhaa;
     $product->discount=$request->discount;
     $product->created_at = $date;
     $product->save();
 
-
-    return back()->with('message','Taarifa zimeingia kikamilifu');
+    Alert::success('message','Taarifa zimeingia kikamilifu');     
+    return redirect()->back();
+    
 }
 
 public function addToCart(Request $request ,$id) // by this function we add product of choose in card
@@ -420,69 +442,69 @@ public function addToCart(Request $request ,$id) // by this function we add prod
 
     }
 
-
-
     // if cart is empty then this the first product
     if($product->quantity-$request->quantity < 0){
-        return back()->with('error','bidhaa hazitoshi, Tafadhali Ongeza Bidhaa');
+        Alert::error('error','bidhaa hazitoshi, Tafadhali Ongeza Bidhaa');     
+        return redirect()->back();
+        
     }
     $cart = session()->get('cart');
     if(!$cart) {
 
         $cart = [
         $id => [
-        'id'=>$product->id,
-        'name'=>$product->name,
-        'type'=>$product->type,
+        'id'=>$product->id,       
         'net_amount'=>$product->net_amount,
         'quantity'=>$request->quantity,
         'discount'=>$product->discount,
         'branch_id'=>$product->branch->id,
         'category_id'=>$product->category->id,
+        'sbidhaa_id'=>$product->sbidhaa->name,
         'sub_quantity'=>$request->sub_quantity,
         'sub_amount'=>$product->sub_amount,
-                ]
+        ]
         ];
 
         session()->put('cart', $cart);
-
-
-        return redirect()->back()->with('message', 'Bidhaa imewekwa kwenye Mkikoteni kikamilifu!');
+        // Alert::success('message', 'Bidhaa imewekwa kwenye Mkikoteni kikamilifu!');     
+        return redirect()->back();
+       
     }
 
     // if cart not empty then check if this product exist then increment quantity
     if(isset($cart[$id])) {
 
         // this code put product of choose in cart
-
-        return redirect()->back()->with('error', 'Bidhaa ishawekwa tayari!');
-
+        Alert::error('error', 'Bidhaa ishawekwa tayari!');     
+        return redirect()->back();
+       
     }
     if(isset($cart[$id]['branch_id'])) {
 
         // this code put product of choose in cart
-
-        return redirect()->back()->with('error', 'Matawi hayakosawa Tafadhali chagua bidhaa kwenye tawi Moja');
-
+        Alert::error('error', 'Matawi hayakosawa Tafadhali chagua bidhaa kwenye tawi Moja');     
+        return redirect()->back();
     }
 
     // if item not exist in cart then add to cart with quantity = 1
     $cart[$id] = [
         'id'=>$product->id,
-        'name'=>$product->name,
-        'type'=>$product->type,
+        // 'name'=>$product->name,
+        // 'type'=>$product->type,
         'net_amount'=>$product->net_amount,
         'quantity'=>$request->quantity,
         'discount'=>$request->discount,
         'branch_id'=>$product->branch->id,
         'category_id'=>$product->category->id,
+        'sbidhaa_id'=>$product->sbidhaa->name,
         'sub_quantity'=>$product->sub_quantity,
         'sub_amount'=>$request->sub_amount,
     ];
 
     session()->put('cart', $cart); // this code put product of choose in cart
+    Alert::success('message', 'Bidhaa imewekwa kikamilifu');
 
-    return redirect()->back()->with('message', 'Bidhaa imewekwa kikamilifu');
+    return redirect()->back();
 }
 
 public function updateCart(Request $request)
@@ -492,7 +514,8 @@ public function updateCart(Request $request)
      {
          $cart = session()->get('cart');
          if($product->quantity-$request->quantity < 0 or $product->total_quantity-$request->sub_quantity < 0){
-            return back()->with('error','bidhaa hazitoshi, Tafadhali Ongeza Bidhaa');
+            Alert::error('error','bidhaa hazitoshi, Tafadhali Ongeza Bidhaa');
+            return back();
         }
          $cart[$request->id]["quantity"] = $request->quantity;
 
@@ -500,9 +523,12 @@ public function updateCart(Request $request)
          session()->put('cart', $cart);
 
          session()->flash('message', 'Cart updated successfully');
-         return redirect()->back()->with('message', 'Mkokoteni Umehaririwa kikamilifu!');
+         alert::success('message', 'Mkokoteni Umehaririwa kikamilifu!');
+         return redirect()->back();
      }
-     return redirect()->back()->with('message', 'Mkokoteni Umehaririwa kikamilifu!');
+     alert::success('message', 'Mkokoteni Umehaririwa kikamilifu!');
+     return redirect()->back();
+     
  }
 
  public function deleteCart(Request $request)
@@ -520,7 +546,8 @@ public function updateCart(Request $request)
          }
 
          session()->flash('message', 'Bidhaa imetolewa kikamilifu');
-         return redirect()->back()->with('message', 'Bidhaa imetolewa kikamilifu');
+         Alert::success('message', 'Bidhaa imetolewa kikamilifu');
+         return redirect()->back();
      }
  }
 
@@ -539,7 +566,8 @@ public function updateCart(Request $request)
 
       if ($validate->fails()){
          $messages = $validate->messages();
-         return back()->with('error','Kuna Kosa wakati wa uwekaji Taarifa');
+         Alert::error('error','Kuna Kosa wakati wa uwekaji Taarifa');
+         return back();
       }
 
     $na = ($request->total_amount - $request->discount);
@@ -562,7 +590,6 @@ public function updateCart(Request $request)
      $order->save();
      $mi = new MultipleIterator();
      $mi->attachIterator(new ArrayIterator($request->product));
-
      $mi->attachIterator(new ArrayIterator($request->quantity));
      $mi->attachIterator(new ArrayIterator($request->sub_quantity));
      $mi->attachIterator(new ArrayIterator($request->amount));
@@ -571,9 +598,17 @@ public function updateCart(Request $request)
         $product = Product::find($p);
         if($product->category_id == 2){
             $total = $product->total_quantity-(($product->sub_quantity * $q)+($s));
-
-            $qunt = $total/$product->sub_quantity;
+           $qunt = $total/$product->sub_quantity;
+           //$maxDeduction= min(($q+$s),$product->quantity*$product->sub_quntity);
+           
+           // dd($product->total_quantity-($product->sub_quantity*$product->quantity));
+            //$len =strlen($product->sub_quantity);
+            //$round=$total-($qunt*$product->sub_quantity);
+           // dd($round);
+           // dd($qunt-(($product->sub_quantity-1)/10**$len));
             //$pius =$product->capital-$total;////////pius
+
+            // $product->sub_quantity=max(0,min($total,$sub_quntity));
             $product->total_quantity = $total;
             $product->quantity=$qunt;
             //$product->capital=$pius;
@@ -613,7 +648,8 @@ public function updateCart(Request $request)
     //  $product->quantity = $product->quantity - $a;
     //  $product->save();
      $request->session()->forget('cart');
-     return back()->with('message','Taarifa zimeingia kikamilifu');
+     Alert::success('message','Taarifa zimeingia kikamilifu');
+     return back();
 
  }
 
@@ -686,10 +722,14 @@ public function editRole(Request $request,$id){
 public function changepassword(Request $request){
 
 if(!(Hash::check($request->old, Auth::user()->password))){
-        return back()->with('error','Neno lako la siri la zamani si sahihi');
+    Alert::error('error','Neno lako la siri la zamani si sahihi');
+    return back(); 
+
 }
 if($request->old == $request->new){
-    return back()->with('error','Neno lako la siri la zamani haliwezi kuwa sawa na jipya');
+    Alert::error('error','Neno lako la siri la zamani haliwezi kuwa sawa na jipya');
+    return back(); 
+   
 }
 $validate = Validator::make($request->all(),[
 
@@ -705,7 +745,8 @@ $user->password = bcrypt($request->new);
 $user->save();
 if($user){
     Auth::logout();
-    return redirect('/')->with('message','umefanikiwa Kubadilisha neno la siri, Ingia Tena');
+    Alert::success('message','umefanikiwa Kubadilisha neno la siri, Ingia Tena');
+    return redirect('/');
 }
 
 }
@@ -729,7 +770,8 @@ public function changeinfo(Request $request){
 
     if ($validate->fails()){
         $messages = $validate->messages();
-        return back()->with('error','kuna tatizo kwenye uwekaji taarifa');
+        Alert::error('error','kuna tatizo kwenye uwekaji taarifa');
+        return back();        
      }
 
 
@@ -741,7 +783,8 @@ public function changeinfo(Request $request){
     $user->address = $request->address;
     $user->gender = $request->gender;
     $user->save();
-    return back()->with('message','Taafifa zimebadilishwa kikamilifu');
+    Alert::success('message','Taafifa zimebadilishwa kikamilifu');
+    return back();
 
 }
 
@@ -814,7 +857,8 @@ $nA = $nA+$na;
     //  $product->quantity = $product->quantity - $a;
     //  $product->save();
      $request->session()->forget('cart');
-     return back()->with('message','Taarifa zimeingia kikamilifu');
+     Alert::success('message','Taarifa zimeingia kikamilifu');
+     return back();
 
  }
 
@@ -832,7 +876,8 @@ $nA = $nA+$na;
 
       if ($validate->fails()){
          $messages = $validate->messages();
-         return back()->with('error','Kuna Kosa wakati wa uwekaji Taarifa');
+         Alert::error('error','Kuna Kosa wakati wa uwekaji Taarifa');
+         return back();
       }
 $na = ($request->total_amount - $request->discount);
 $nA =  $na*(($request->vat)/100);
@@ -875,7 +920,8 @@ $nA = $nA+$na;
     //  $product->quantity = $product->quantity - $a;
     //  $product->save();
      $request->session()->forget('cart');
-     return back()->with('message','Taarifa zimeingia kikamilifu');
+     Alert::success('message','Taarifa zimeingia kikamilifu');
+     return back();
 
  }
 
@@ -890,12 +936,12 @@ $nA = $nA+$na;
         $role->delete();
     }
     $role->delete();
-
-
         if ($role){
-            return back()->with('message','umefanikiwa');
+            Alert::success('message','umefanikiwa');
+            return back();
         }
-        return back()->with('error','kunakitu hakiko sawa wakati wa ufutaji');
+        Alert::error('error','kunakitu hakiko sawa wakati wa ufutaji');
+        return back();
 }
 
 public function editOrders(Request $request,$id){
@@ -906,9 +952,11 @@ public function editOrders(Request $request,$id){
     if ($sells){
     $sells->quantity = $request->quantity;
     $sells->save();
-        return back()->with('message','umefanikiwa');
+    Alert::success('message','umefanikiwa');
+    return back();
     }
-    return back()->with('error','kunakitu hakiko sawa wakati wa ufutaji');
+    Alert::error('error','kunakitu hakiko sawa wakati wa ufutaji');
+    return back();
 
 }
 
@@ -935,7 +983,107 @@ public function updateShop(Request $request,$id){
           'website'=>$request->website,
            'updated_at'=>$date
         ]);
-        return back()->with('message','Taarifa zimebadilika kikamilifu');
+        Alert::success('message','Taarifa zimebadilika kikamilifu');
+        return back();
+        
 }
+    //==================FUNCTIONS FOR SAJILI PRODUCT=====================
+    public function createsbidhaa(Request $request){
 
+        $data = Sbidhaa::where('name', '=' ,$request->name)->where('type', '=' ,$request->type)->first();
+        $date = Carbon::now();
+ 
+        if ($data != null){
+         Alert::error('error','Jina La Bidhaa Tayari Lipo! Andika Lingine');
+         return back();
+        }
+ 
+         $validate = Validator::make($request->all(),[
+             'name'=>'required',
+             'type'=>'required',
+          
+ 
+         ]);
+ 
+          if ($validate->fails()){
+             $messages = $validate->messages();
+             Alert::error('errors','Kuna Kosa wakati wa uwekaji Taarifa');
+             return back();
+          }
+ 
+ 
+         $sbidhaa = Sbidhaa::create([
+             'name'=> $request->name,
+             'type'=>$request->type,
+             'created_at'=> $date,
+         ]);
+         Alert::success('message','Taarifa zimeingia kikamilifu');
+         return back();
+        
+     }
+     public function deletesbidhaa($id){
+
+        $product = sbidhaa::where('id',$id)->delete();
+
+        if ($product){
+            Alert::success('message','Bidhaa imefutwa kikamilifu');
+            return back();
+           
+
+        }
+        Alert::error('error','Kuna Kosa wakati wa ufutaji wa Bidhaa');
+        return back();
+     
+    }
+
+    
+
+    public function editsbidhaa(Request $request,$id){
+
+        $date = Carbon::now();
+
+        $validate = Validator::make($request->all(),[
+          'name'=>'required',
+          'type'=>'required',
+      ]);
+
+      if ($validate->fails()){
+        $messages = $validate->messages();
+        return back()->with('error',$messages);
+     }
+
+      $data = Sbidhaa::where('id',$id)->update(
+          [
+          'name'=> $request->name,
+          'type'=>$request->type,
+          'updated_at'=>$date
+      ]
+  );
+  Alert::success('message','Taarifa zimebadilika kikamilifu');
+  return back();
+
+  }
+  public function exportPDF(Request $request){
+        
+    $fromDate = $request->input('fromDate');
+    $toDate   = $request->input('toDate');
+    $other    = $request->input('other');
+    $role = Role::all();
+    if(count($request->all()) > 0){
+        $pdf = new PDF();
+        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+        $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        $pdf->loadView('layouts.reportPrint',compact('query','role','pius'));
+        return $pdf->stream('mauzo.pdf');
+    }
+    else{
+        
+        
+        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id')->get();
+        $pius =Sell::sum('amount');
+        $pdf = new PDF();
+        $pdf->loadView('layouts.reportPrint',compact('query','role','pius'));
+        return $pdf->stream('reportPrint.pdf');
+    }
+}
 }

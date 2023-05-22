@@ -1,5 +1,4 @@
 <html>
-
 <head>
     <title></title>
     <style>
@@ -50,12 +49,14 @@
     .subTitle {
         font-size: 18px;
     }
-    small{
+
+    small {
         float: right;
         font-size: 10px;
         padding-top: 10px;
     }
-    .main-footer{
+
+    .main-footer {
         padding: 10px;
     }
     </style>
@@ -66,12 +67,12 @@
         <thead>
             <tr>
                 <th style="text-align:center;" colspan="17" height="70">
-                    <strong class="zrb">GIRAFFE SHAPPERS COMPANY LTD</strong><br>
-                    <strong class="subTitle">RIPORI YA MAUZO TAWI LA KARIAKOO</strong><br>
+                    <strong class="zrb">KIMARO SHAPPERS COMPANY LTD</strong><br>
+                    <strong class="subTitle">RIPORI YA MAUZO TAWI LA MWANANYAMALA</strong><br>
 
                     Ripoti ya mwezi
-                    <strong>August 2022</strong>
-                    <strong>From 20 Aug 2022 To 20 Sept 2022 </strong>
+                    <strong>August 2023</strong>
+                    <strong>From  To 20 Sept 2023 </strong>
 
                 </th>
             </tr>
@@ -81,53 +82,47 @@
     <table class="table">
         <thead>
             <tr>
-                <th>sn</th>
-                <th>Tarehe ya Mauzo</th>
-                <th>Bidhaa</th>
-                <th>Idadi</th>
-                <th>Punguzo</th>
-                <th>Bei</th>
-                <th>Kiasi</th>
-                <th>Muuzaji</th>
+                <th>Sn</th>
+                <th>JIna</th>
+                <th>Aina</th>
+                <th>idadi</th>
+                <th>kiasi</th>
                 <th>Tawi</th>
-                {{--  <th aria-hidden="true">Kitendo</th>  --}}
+                <th>Kipengele</th>
+                <th>Mfanyakazi</th>
+                <th>Tarehe</th>
             </tr>
         </thead>
         <tbody>
-            <!-- here your content -->
-            @foreach($query as $value)
-
+            @foreach ($query as $q)
             <tr>
-                <td class="id">{{$loop->iteration}}</td>
-{{--  <?php $total+=($value->quantity * $value->amount) ?>
-<?php $quantity+=$value->quantity ?>  --}}
-                <td class="email">{{$value->created_at}}</td>
-                <td class="name">{{$value->product->name}}-{{$value->product->type}}</td>
-                <td class="sex">{{$value->quantity}}</td>
-                <td class="discount">{{$value->product->discount}}%</td>
-                <td class="dateOfBirth">{{$value->amount}}</td>
-                <td class="salary">Tsh {{$value->quantity * $value->amount}}</td>
-                <td class="phone">{{$value->order->user->first_name}} {{$value->order->user->last_name}}</td>
-                <td class="jobPosition">{{$value->product->branch->name}}-{{$value->product->branch->location}}</td>
-
-
-
-
-
+                <td>{{$loop->iteration}}</td>
+                <td>{{ $q->product->sbidhaa->name }}</td>
+                <td>{{ $q->product->sbidhaa->type }}</td>
+                <td> {{ $q->quantity }} </td>
+                <td>{{ $q->amount }}</td>                
+                <td> {{ $q->product->branch->name }}</td>
+                <td>{{ $q->product->category->name }}</td>
+                <td>jina</td>
+                <td>tarehe</td>
+               {{-- <td>{{ $q->order->user->first_name }}</td>  --}} 
+               {{-- <td>{{ $q->created_at->format('d/m/Y') }}</td>  --}} 
             </tr>
-
             @endforeach
         </tbody>
+        <tfooter>
+            <tr>
+                <th colspan="7"></th>
+                <td align='right'><b>Sales:</b></td>
+                <td>Tsh {{$pius}}/=</td>
+            </tr>
+        </tfooter>
     </table>
-    <footer class="main-footer">
-    <strong>1 of 5</strong>
-    <small>
-    21 August 2022
-    </small>
-  </footer>
+    
     <script type="text/javascript">
     window.addEventListener("load", window.print());
     </script>
+    
 </body>
 
 </html>

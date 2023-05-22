@@ -1,6 +1,7 @@
 @include('includes/header')
 @include('includes/nav')
 @section('bidhaa', 'active')
+@include('sweetalert::alert')
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -13,7 +14,7 @@
 
                 <!-- /alert -->
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><i class="nav-icon fa fa-product-hunt"></i> Bidhaa</h1>
+                    <h1 class="m-0 text-dark"><i class="nav-icon fa fa-th"></i> Bidhaa</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -28,35 +29,17 @@
 
     <!-- Main content -->
     <section class="content">
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-sm alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <!-- <h5><i class="icon fas fa-check"></i> Error!</h5> -->
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
-        @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible" style="height:5;">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <!-- <h5><i class="icon fas fa-check"></i> Taarifa!</h5> -->
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif
+
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
 
-            {{--  <div class="card-body text-center text-bold ">
-                JUMLA YA BIDHAA : <i class="text-success"></i><br>
-                BIDHAA <i class="text-danger"></i> ZIPO CHINI YA 5
-            </div>  --}}
 
         </div>
-        <div class="card card-secondary card-outline">
+        <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title">Bidhaa zilizopo</h3>
+                <h3 class="card-title"><i class="nav-icon fa fa-th"></i> Bidhaa zilizopo</h3>
                 @can('ongeza-bidhaa')
-                <button type="button" class="btn btn-secondary pull-right" data-toggle="modal"
-                    data-target="#modal-lg-file">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-lg-file">
                     <span class="fa fa-file"></span> Weka File la Bidhaa mpya</button>
                 <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-lg1">
                     <span class="fa fa-plus"></span> Weka Bidhaa Mpya</button>
@@ -64,10 +47,10 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="example1" class="table table-sm  table-striped">
+                <table id="example3" class="table table-hover">
                     <thead>
                         <tr>
-                            <th>S/no</th>
+                            <th>#</th>
                             <th>Bidhaa</th>
                             <th>Aina</th>
                             <th>kununua</th>
@@ -86,14 +69,13 @@
                         @foreach ($product as $p)
                         <tr>
                             <td>{{ $loop->iteration }} </td>
-                            <td>{{ $p->name }} </td>
-                            <td>{{ $p->type }}</td>
+                            <td><b>{{ $p->sbidhaa->name }}</b></td>
+                            <td>{{ $p->sbidhaa->type}}</td>
                             <td>{{$p->bprice}}</td>
                             @if ($p->discount > 0 )
                             <td><strike
                                     style="text-decoration-thickness: 2px; text-decoration-color: red">{{ $p->amount }}</span></strike>
                                 <br>
-
                                 {{ $p->net_amount }}
                             </td>
 
@@ -109,7 +91,7 @@
                             <td>
                                 @if($p->quantity <= 10) <b style="color:red;">{{ $p->quantity }}</b>
                                     @else
-                                    <b style="color:green;">{{ $p->quantity }}</b>
+                                    <b style="color:blue;">{{ $p->quantity }}</b>
                                     @endif
 
                             </td>
@@ -124,11 +106,11 @@
                             <td>{{ $p->capital }}</td>
                             <td>{{ $p->branch->name }}</td>
 
-                            <td>{{$p->created_at->format('D, d-m-Y h:i A') }}</td>
+                            <td>{{$p->created_at->format('d-m-Y h:i A') }}</td>
                             <td>
                                 @can('hariri-bidhaa')
                                 <a type="button" class="btn btn-sm btn-primary" style="color:white;" data-toggle="modal"
-                                    data-target="#modal-secondaryy{{ $p->id }}"><i class="fas fa-pencil-alt"></i></a>
+                                    data-target="#modal-secondaryy{{ $p->id }}"><i class="fas fa-edit"></i></a>
                                 @endcan
                                 @can('futa-bidhaa')
                                 <a type="button" class="btn btn-sm btn-danger" style="color:white;" data-toggle="modal"
@@ -171,8 +153,8 @@
                             <div class="modal fade" id="modal-secondaryy{{ $p->id }}">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Hariri Bidhaa</h4>
+                                        <div class="modal-header bg-primary">
+                                            <h4 class="modal-title"><span class="fa fa-edit"></span>Hariri Bidhaa</h4>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -182,19 +164,24 @@
                                                 {{ csrf_field() }}
 
                                                 <input type="hidden" name="proid" value="{{ $p->id }}">
-                                                <p>Hariri Muuzaji </p>
 
-                                                <p>
                                                 <div class="row">
-                                                    <div class="col col-md-6">
-                                                        <label>Name</label>
-                                                        <input type="text" name="name" class="form-control"
-                                                            value="{{ $p->name }}" required>
-                                                    </div>
-                                                    <div class="col col-md-6">
-                                                        <label>Type</label>
-                                                        <input type="text" name="type" class="form-control"
-                                                            value="{{ $p->type }}" required>
+                                                    <div class="col col-md-12">
+                                                        <label>Chagua Bidhaa</label>
+                                                        <select name="sbidhaa" class="form-control">
+                                                                                                                
+                                                            @foreach ($data as $role)
+                                                            @if ($role->id == $p->sbidhaa->id)
+                                                            <option value="{{ $p->sbidhaa->id }}" selected>
+                                                                {{ $p->sbidhaa->name }}-{{ $p->sbidhaa->type }}
+                                                            </option>
+                                                            @else
+                                                            <option value="{{ $role->id }}">
+                                                                {{ $role->name }}-{{ $role->type }}</option>
+                                                            @endif
+                                                            @endforeach
+                                                            
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -213,9 +200,6 @@
                                                         <input type="number" name="quantity" min="0" step="0.25"
                                                             class="form-control" value="{{ $p->quantity }}" required>
                                                     </div>
-                                                </div>
-
-                                                <div class="row">
                                                     <div class="col col-md-6">
                                                         <label>Tawi</label>
                                                         <select class="form-control" name="branch">
@@ -233,14 +217,28 @@
                                                         </select>
 
                                                     </div>
-                                                    <div class="col col-md-6 d-nones" id="kupimwa">
+                                                </div>
+
+                                                <div class="row">
+
+                                                    <div class="col col-md-6">
+                                                        <label>Kipengele</label>
+                                                        <select class="form-control" name="category"
+                                                            onchange="enanbleCategory(this)">
+                                                            <option disabled selected value>{{ $p->category->name }}</option>
+                                                            @foreach ($categories as $t)
+                                                            <option value="{{ $t->id }}">{{ $t->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    @if(!@empty($p->sub_amount))
+                                                    <div class="col col-md-6">
                                                         <label>idadi(kupimwa Jumla)</label>
                                                         <input type="number" name="sub_quantity" min="0" step="0.25"
-                                                            value="0" class="form-control"
+                                                            value="{{ $p->sub_quantity }}" class="form-control"
                                                             placeholder="weka punguzo la bidhaa..." required>
-
                                                     </div>
-                                                    @if(!@empty($p->sub_amount))
                                                     <div class="col col-md-6">
                                                         <label>bei kipimo</label>
                                                         <input type="number" name="sub_amount" min="0" step="0.25"
@@ -259,17 +257,14 @@
                                                         <input type="number" name="discount" class="form-control"
                                                             value="{{ $p->discount }}" required>
                                                     </div>
-                                                    @endif
                                                     @endcan
                                                 </div>
-
-                                                </p>
+                                                @endif
                                         </div>
                                         <div class="modal-footer justify-content-between">
-                                            <button type="button" class="btn btn-outline-light"
+                                            <button type="button" class="btn btn-danger"
                                                 data-dismiss="modal">Funga</button>
-                                            <button type="submit" name="remove"
-                                                class="btn btn-outline-light">Hariri</button>
+                                            <button type="submit" name="remove" class="btn btn-primary">Hariri</button>
 
                                         </div>
                                         </form>
@@ -280,6 +275,7 @@
                                 </div>
                                 <!-- /.modal-dialog -->
                             </div>
+
                         </tr>
                         @endforeach
 
@@ -304,8 +300,8 @@
     <div class="modal fade" id="modal-lg1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Ongeza Bidhaa</h4>
+                <div class="modal-header bg-primary">
+                    <h4 class="modal-title"><span class="fa fa-plus"></span> Ongeza Bidhaa</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -313,34 +309,35 @@
                 <div class="modal-body">
                     <p>
                     <div class="row">
-                        <div class="col col-md-6">
-                            <label>Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="Weka Jina la bidhaa...">
-                        </div>
-                        <div class="col col-md-6">
-                            <label>Type</label>
-                            <input type="text" name="type" class="form-control" placeholder="Weka aina ya bidhaa...">
+                        <div class="col col-md-12">
+                            <label>Chagua Bidhaa</label>
+                            <select name="sbidhaa" class="form-control">
+                                <option>---</option>
+                                @foreach($data as $p)
+                                <option value="{{$p->id}}"> {{$p->name}} --- {{$p->type}} </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col col-md-6">
-                            <label>Buying Price</label>
+                            <label>Bei Kununua</label>
                             <input type="number" name="bprice" class="form-control"
                                 placeholder="Weka Bei ya Kununua...">
                         </div>
 
                         <div class="col col-md-6">
-                            <label>Selling Price</label>
+                            <label>Bei Kuuza</label>
                             <input type="number" name="amount" class="form-control" placeholder="Weka Bei ya Kuuza...">
                         </div>
 
                         <div class="col col-md-6">
-                            <label>Quantity</label>
+                            <label>Idadi</label>
                             <input type="number" min="0" name="quantity" class="form-control"
                                 placeholder="Weka idadi ya bidhaa...">
                         </div>
                         <div class="col col-md-6">
-                            <label>Branch</label>
+                            <label>Tawi</label>
                             <select class="form-control" name="branch">
                                 <option disabled selected value>---</option>
                                 @foreach ($branch as $role)
@@ -391,7 +388,8 @@
                     </p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button name="addproduct" class="btn btn-primary ">Ongeza</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Funga</button>
+                    <button name="addproduct" class="btn btn-primary">Ongeza</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -482,8 +480,7 @@
     <!-- /.modal-content -->
 </div>
 <!-- /.modal-dialog -->
-</div>
-<!-- /.content-wrapper -->
+
 
 <script>
 function enanbleCategory(cat) {
@@ -509,4 +506,6 @@ function enanbleCategor(cat) {
 
 }
 </script>
+
+
 @include('includes/footer')

@@ -1,346 +1,152 @@
 <!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html"; charset="utf-8" />
-    <title>
-        Risiti
-    </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Material Design for Bootstrap</title>
 
-    {{--  <link rel="stylesheet" href="{{URL::asset('css/pdf.css')}}">  --}}
-<style>
-table {
-        border-collapse: collapse;
-        width: 90%;
-        margin-top: 2%;
-        margin-bottom: 2%;
-        margin-left: 5%;
-        margin-right: 5%;
-        border: 1px solid;
-            }
-td, th{
-        padding: 3px;
-        text-align: left;
-    }
-    th{
-        border: 1px solid;
-    }
-
-#customer_table td, #invoice_table td, #sign_table td{
-    border-left: 1px solid;
-}
-
-#info_table{
-    border: 0px;
-}
-
-img{
-    width:200px;
-    height:150px
-}
-
-tr.border_bottom td{
-    border-bottom: 1px solid black
-}
-</style>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/adminlte.min.css">
 </head>
+
 <body>
 
-    <table id="info_table">
-
-        <?php $shop = App\Models\ShopInfo::all() ?>
-
-        @foreach($shop as $shop)
-        <tr>
-            <td style="margin-left: 5%">
+    <!-- Start your project here-->
+    <div class="card">
+        <div class="card-body">
+            <div class="container mb-5 mt-3">
+                
+                <?php $shop = App\Models\ShopInfo::all() ?>
+                @foreach($shop as $shop)
                 <?php
                 $path = $shop->logo;
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
                 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
                 ?>
-        <img src="{{$base64}}">
 
-            </td>
-            <td>
-             <b>{{ $shop->name }}<br>
-                {{ $shop->address }}<br>
-                {{ $shop->location }},<br>
-                {{ $shop->address }}<br>
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <i class="fab fa-mdb fa-4x ms-0" style="color:#5d9fc5 ;"></i>
+                            <h4>{{ $shop->name }}</h4>
+                            <p class="pt-0"><img src="{{$base64}}"
+                                    style="width:150px;height:100px; border-radius:20px;"></p>
 
-            </td>
-            <td>
-             <b>Tel:  {{ $shop->phoneNumber}}<br>
-                Mob:  {{ $shop->mobile1 }}<br>
-                      {{ $shop->mobile2 }}<br>
-                      {{ $shop->mobile3 }}<br>
-                Email:{{ $shop->email}}<br>
-                Web: {{ $shop->website}}</b>
-            </td>
-        </tr>
-    @endforeach
+                            <p style="font-size:12px"> Address: {{ $shop->address }},location:
+                                {{ $shop->location }},Tel: {{ $shop->phoneNumber}},
+                                Mob: {{ $shop->mobile1 }},Email:{{ $shop->email}},Web: {{ $shop->website}}</p>
+                        </div>
+                        <hr>
+                    </div>
+                    @endforeach
+                    @foreach ($o as $o)
+                    <div class="row">
+                        <table>
+                            <tr>
+                                <td width="150">
+                                    <ul class="list-unstyled">
+                                        <li class="text-muted">To: <span
+                                                style="color:#5d9fc5 ;">{{ ucwords($o->customer_name) }}</span></li>
+                                        <li class="text-muted"><b>Namba:</b> <span
+                                                style="color:#5d9fc5 ;">{{ $o->phonenumber }}</span></li>
+                                        <li class="text-muted"><b>Email:</b></li>
+                                        <li class="text-muted"><i class="fas fa-phone"></i> 123-456-789</li>
+                                    </ul>
+                                </td>
+                                <td width="120"></td>
+                                <td width="150">
+                                   
+                                    <ul class="list-unstyled">
+                                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i>
+                                            <span
+                                                class="fw-bold"><b>INV-ID:</b></span>{{ str_pad( $o->id,5,'0',STR_PAD_LEFT) }}
+                                        </li>
+                                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i>
+                                            <span class="fw-bold"><b>Tarehe:</b> </span>{{ $date->format('d/m/Y') }}
+                                        </li>
+                                        
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="col-xl-8">
 
-    </table>
-    @foreach ($o as $o)
+                        </div>
+                        <div class="col-xl-4 float">
 
+                        </div>
+                    </div>
 
-    <table id="customer_table">
+                    <div class="row my-2 mx-1 justify-content-center">
+                        <table class="table table-striped table-borderless border-sm">
+                            <thead style="background-color:#84B0CA ;" class="text-white">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">BIDHAA</th>
+                                    <th scope="col">IDADI</th>
+                                    <th scope="col">BEI</th>
+                                    <th scope="col">JUMLA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($s as $q)
+                                <tr>
+                                    <th scope="row">{{ $loop->iteration }}</th>
+                                    <td> {{ $q['product'] ['name']}}</td>
+                                    <td> {{ $q['quantity']}} </td>
+                                    <td>{{ $q['amount']}} </td>
+                                    <td> {{ $q['amount']*$q['quantity']}} </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
 
-        <tr>
-            <th colspan="3" style="text-align:center;">
-                .::INVOICE::.
-            </th>
-        </tr>
-        <tr>
-            <th colspan="3">
+                        </table>
+                    </div>
 
-            </th>
-        </tr>
-        <tr>
-            <th>
-                Customer Details
-            </th>
-            <th>
-                Company Details
-            </th>
-            <th>
+                    <table>
+                        <tr>
+                            <td width="300" colspan="2"></td>
+                            <td><span class="text-black me-3">SubTotal</span></td>
+                            <td>{{ $o->org_amount + $o->discount }}</td>
+                        </tr>
+                        <tr>
+                            <td width="300" colspan="2"></td>
+                            <td><span class="text-black me-3">Punguzo</span></td>
+                            <td>{{ $o->discount }}</td>
+                        </tr>
+                        <tr>
+                            <td width="300" colspan="2"></td>
+                            <td width="100"><b class="text-black me-3"> Jumla</b></td>
+                            <td><b style="font-size: 20px;"> {{ $o->org_amount  }}</b></td>
+                        </tr>
+                    </table>
+                    @endforeach
 
-            </th>
-        </tr>
+                    <div class="row">
+                        <div class="col-xl-10">
+                            <footer class="main-footer no-print">
+                                <div class="float-right d-none d-sm-block">
+                                    <b>Printed by</b> {{ ucwords(Auth::user()->first_name)}}
+                                </div>
+                                <strong>Copyright &copy; 2023 <a href="#">Kimaro Company ltd</a></strong>
+                            </footer>
+                        </div>
 
-        <tr>
-            <td>
-                <b>NAME:  {{ ucwords($o->customer_name) }}</b>
-            </td>
-            <td>
-                <b>REF NUMBER</b>
-            </td>
-            <td>
-                INV-{{ str_pad( $o->id,5,'0',STR_PAD_LEFT) }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>ADDRESS: {{ ucwords($o->address) }}</b>
-            </td>
-            <td>
-                <b>TIN NUMBER</b>
-            </td>
-            <td>
-                {{ $shop->TIN }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>PHONE:{{ $o->phonenumber }}</b>
-            </td>
-            {{--  <td>
-                <b>TIN NUMBER</b>
-            </td>
-            <td>
-                2022-07=21
-            </td>  --}}
-            <td>
-                <b>VRN</b>
-                </td>
-                <td>
-                    {{ $shop->VRN }}
-                </td>
-        </tr>
-        <tr>
-            <td>
-            <b>TIN:{{ ucwords($o->TIN) }}</b>
-            </td>
-            {{--  <td>
-            <b>VRN</b>
-            </td>
-            <td>
-                20220721
-            </td>  --}}
-            <td>
-                <b>CURRECY</b>
-                </td>
-                <td>
-                    TZS
-                </td>
-        </tr>
-        <tr>
-            <td>
-            <b>VRN</b>
-            </td>
-            <td>
-                <b> BRANCH</b>
-            </td>
-            @if(empty(Auth::user()->branch->name))
-            <td>{{ ucwords($shop->MainBranch)}}</td>
-             @else
-            <td>{{ ucwords(Auth::user()->branch->name)}}</td>
-            @endif
+                    </div>
 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End your project here-->
 
-
-        </tr>
-        {{--  <tr>
-            <td> </td>
-            <td>
-            <b> BRANCH</b>
-            </td>
-            <td>
-            <b>Kariakoo</b>
-            </td>
-        </tr>  --}}
-    </table>
-
-    <br><br>
-    <table id="invoice_table">
-        <thead>
-        <tr>
-            <th>
-                DESCRIPTION
-            </th>
-            <th>
-                QTY
-            </th>
-            <th>
-                UNIT PRICE
-            </th>
-            <th>
-                AMOUNT
-            </th>
-        </tr>
-        </thead>
-
-        <tbody>
-
-        <tr>
-
-
-            <td>
-
-                @foreach ($s as $q)
-
-                              {{ $loop->iteration }}. {{ $q['product'] ['name']}} {{ $q['product'] ['type']}}<br><br>
-
-                              @endforeach
-
-            </td>
-
-
-
-
-            <td>
-                @foreach ($s as $q)
-
-                            {{ $q['quantity']}}<br><br>
-
-                              @endforeach
-            </td>
-            <td>
-                @foreach ($s as $q)
-
-                            {{ $q['amount']}}<br><br>
-
-                              @endforeach
-            </td>
-            <td>
-                @foreach ($s as $q)
-
-                            {{ $q['amount']*$q['quantity']}}<br><br>
-
-                              @endforeach
-            </td>
-
-        </tr>
-
-
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><b>Subtotal</b></td>
-            <td>
-
-            {{ $o->org_amount + $o->discount }}
-
-            </td>
-        </tr>
-
-        <tr>
-            <td></td>
-            <td></td>
-            <td><b>Discount</b></td>
-            <td>
-
-            {{ $o->discount }}
-
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><b>Net SubTotal</b></td>
-            <td>
-
-            {{ $o->org_amount  }}
-
-            </td>
-        </tr>
-        <tr class="border_bottom">
-            <td></td>
-            <td></td>
-            <td><b>VAT {{ $o->vat  }}%</b></td>
-            <td>
-
-            {{ ($o->vat/100) * $o->org_amount }}
-
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><b>TOTAL</b></td>
-            <td>
-
-            {{ $o->total_amount  }}
-
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-
-    </table>
-
-    <br><br>
-    <table id="sign_table">
-        <tr>
-            <th>
-                Terms & Conditions:
-            </th>
-            <th>
-                Autrorised Signature:
-            </th>
-        </tr>
-        <tr>
-            <td width="50%" style="text-align: center;">
-               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quidem magnam esse temporibus expedita unde, error adipisci nostrum excepturi facere dicta .
-            </td>
-            <td width="50%">
-                Name: {{ ucwords(Auth::user()->first_name)}} {{ ucwords(Auth::user()->last_name)}}<br>
-                Date: {{ $date->format('d/m/Y') }}
-<br><br><br>
-            </td>
-
-        </tr>
-
-    </table>
-
-<footer>
-    <p style="text-align: center"><strong>Copyright &copy; 2022 <a href="#">Giraffe Shappers Co.Ltd</Co></a>.</strong>
-    All rights reserved.</p>
-
-  </footer>
+    <!-- MDB -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript"></script>
 </body>
+
+</html>

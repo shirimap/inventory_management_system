@@ -1,6 +1,6 @@
 @include('includes/header')
 @include('includes/nav')
-
+@include('sweetalert::alert')
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -26,22 +26,7 @@
 
     <!-- Main content -->
     <section class="content">
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
-        @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif
-        <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
-
-
+       
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h3 class="card-title">Taarifa za Duka</h3>

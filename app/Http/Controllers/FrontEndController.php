@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\User;
+use App\Models\Matumizi;
+use App\Models\Sbidhaa;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Order;
@@ -16,7 +18,6 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use DB;
 use ZanySoft\LaravelPDF\PDF;
-use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Session;
 class FrontEndController extends Controller
@@ -36,9 +37,7 @@ class FrontEndController extends Controller
     }
 
     public function product(){
-
-
-        return view('layouts.product');
+         return view('layouts.product');
     }
     //the fuction for the admin
     public function admin(){
@@ -47,45 +46,89 @@ class FrontEndController extends Controller
     //The function for Bidhaa
     public function bidhaa(){
         if(empty(Auth::user()->branch_id)){
-            
+            $data= Sbidhaa::all();            
             $branch = Branch::all();
             $product = Product::all();
             $categories = Category::all();
-            return view('layouts.bidhaa',compact('branch','product','categories'));
+            return view('layouts.bidhaa',compact('branch','product','categories','data'));
         }
         else{
+            $data= Sbidhaa::all();  
             $branch = Branch::all();
             $categories = Category::all();
             $product = Product::where('branch_id',Auth::user()->branch->id)->get();
-            return view('layouts.bidhaa',compact('branch','product','categories'));
+            return view('layouts.bidhaa',compact('branch','product','categories','data'));
         }
 
 
     }
     //The function for the Dashboard
     public function dashboard(){
-
         if(empty(Auth::user()->branch_id)){
-            
             $branch = Branch::all();
-            $product = Product::all();
+            $product = Product::all();  
             $user = User::all();
-            $orders = Order::sum('total_amount');
-            $order = number_format($orders,2);
+            $data= Sell::with('product')->select('product_id',DB::raw('sum(quantity) as count'))->groupBy('product_id')->orderBy('count','desc')->get();
+            
+            $sells = Sell::sum('amount');
+            $sell = number_format($sells);
             $capitals= Product::sum('capital');
-            $capital = number_format($capitals,2);
+            $capital = number_format($capitals);
             $pprofits= Product::sum('pprofit');
-
-            $dina =number_format($capitals - $orders,2);            
-            $pprofit = number_format($pprofits,2);
-            return view('layouts.dashboard',compact('user','branch','product','order','capital','pprofit','dina'));
+            $dina =number_format($capitals - $sells);            
+            $pprofit = number_format($pprofits);
+            $currentDate= date('Y-m-d');
+            $todaysales= number_format(Sell::whereDate('created_at',$currentDate)->sum('amount'));
+        
+            $sales = Sell::selectRaw('YEAR(created_at) as year,MONTH(created_at) AS month,SUM(amount) AS total')
+                ->groupBy('year','month')
+                ->get();
+        
+           // $data = $sales->pluck('total');
+            // $labels =$sales->pluck('month');
+                $data=[];
+                $labels=[];
+                 foreach($sales as $sale){
+                    $data[]=$sale->total;
+                    $labels[]=Carbon::createFromDate($sale->year,$sale->month)->format('M Y');
+                 }
+          
+        
+            return view('layouts.dashboard',['labels' => $labels,'amounts' => $data],
+            compact('user','branch','product','sell','capital','pprofit','dina','data','todaysales'));
         }
         else{
             $branch = Branch::all();
-            $product = Product::where('branch_id',Auth::user()->branch->id)->get();
-            $user = User::where('branch_id',Auth::user()->branch->id)->get();
-            $order = Order::where('user_id',Auth::user()->id)->sum('total_amount');
-            return view('layouts.dashboard',compact('user','branch','product','order'));
+            $product = Product::all();  
+            $user = User::all();
+            $data= Sell::with('product')->select('product_id',DB::raw('sum(quantity) as count'))->groupBy('product_id')->orderBy('count','desc')->get();
+            
+            $sells = Sell::sum('amount');
+            $sell = number_format($sells);
+            $capitals= Product::sum('capital');
+            $capital = number_format($capitals);
+            $pprofits= Product::sum('pprofit');
+            $dina =number_format($capitals - $sells);            
+            $pprofit = number_format($pprofits);
+            $currentDate= date('Y-m-d');
+            $todaysales= number_format(Sell::whereDate('created_at',$currentDate)->sum('amount'));
+        
+            $sales = Sell::selectRaw('YEAR(created_at) as year,MONTH(created_at) AS month,SUM(amount) AS total')
+                ->groupBy('year','month')
+                ->get();
+        
+           // $data = $sales->pluck('total');
+            // $labels =$sales->pluck('month');
+                $data=[];
+                $labels=[];
+                 foreach($sales as $sale){
+                    $data[]=$sale->total;
+                    $labels[]=Carbon::createFromDate($sale->year,$sale->month)->format('M Y');
+                 }
+          
+        
+            return view('layouts.dashboard',['labels' => $labels,'amounts' => $data],
+            compact('user','branch','product','sell','capital','pprofit','dina','data','todaysales'));
         }
 
 
@@ -94,13 +137,29 @@ class FrontEndController extends Controller
     public function empty(){
         return view('layouts.empty');
     }
+    //The function for the empty
+    public function profile(){
+        return view('layouts.profile');
+    }
+
+    //The function for the sajili bidhaa
+    public function sbidhaa(){
+        $data= Sbidhaa::all();
+        return view('layouts.sajilbidhaa',compact('data'));
+    }
+
+
     //The function for the historia ya mauzo
     public function historiamauzo(){
 
         $sells = Sell::all();
         return view('layouts.historiamauzo',compact('sells'));
     }
-
+// function for matumizi
+    public function matumizi()
+    {
+        return view('layouts.matumizi');
+    }
     //The function for the matawi
     public function matawi(Request $request){
         $branch = Branch::all();
@@ -154,9 +213,7 @@ class FrontEndController extends Controller
 
         $users = User::all();
         $fromDate = $request->input('fromDate');
-
         $toDate   = $request->input('toDate');
-
         $other    = $request->input('other');
         $query = Sell::where('status','IMEUZWA')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
         return view('layouts.report',compact('query'));
@@ -235,21 +292,20 @@ class FrontEndController extends Controller
 
         if(count($request->all()) > 0){
             $pdf = new PDF();
-            $query = Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-            $pdf->loadView('layouts.reportPrint',compact('query'));
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+            $pdf->loadView('layouts.reportPrint',compact('query','pius'));
             return $pdf->stream('mauzo.pdf');
 
         }
         else{
-            $query = Sell::all();
             $pdf = new PDF();
-
-            $pdf->loadView('layouts.reportPrint',compact('query'));
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+            $pdf->loadView('layouts.reportPrint',compact('query','pius'));
             return $pdf->stream('reportPrint.pdf');
 
         }
-
-
 }
 
 // public function report(){
@@ -258,9 +314,21 @@ class FrontEndController extends Controller
 
 //     return view('layouts.report',compact('users'));
 // }
-public function reportPrint(){
-    ;
-    return view('layouts.reportPrint',compact('users'));
+public function reportPrint(Request $request){
+    $fromDate = $request->input('fromDate');
+        $toDate   = $request->input('toDate');
+        $other    = $request->input('other');
+        $role = Role::all();
+        if(count($request->all()) > 0){
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+            return view('layouts.reportPrint',compact('query','role','pius'));
+        }
+        else{
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id')->get();
+            $pius =Sell::sum('amount');
+            return view('layouts.reportPrint',compact('query','role','pius'));
+        }
 }
 
 public function punguzo(){
@@ -289,4 +357,7 @@ public function editorder($id){
     $shop = ShopInfo::all();
     return view('layouts.editorder',compact('sell','shop'));
 }
+
+
+
 }

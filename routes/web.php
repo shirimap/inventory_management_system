@@ -59,8 +59,15 @@ Route::group(['middleware' => 'auth'],function(){
     //this is the route for the empty
     Route::get('empty',[FrontEndController::class,'empty'])->name('empty');
 
+    //this is the route for the profile
+    Route::get('profile',[FrontEndController::class,'profile'])->name('profile');
+
     //this is the router for the historiamauzo
     Route::get('historiamauzo',[FrontEndController::class,'historiamauzo']);
+
+    // this is the router for the expences
+    Route::get('matumizi',[FrontEndController::class,'matumizi'])->name('matumizi');
+
 
     //this is the route for logout
 
@@ -97,6 +104,13 @@ Route::group(['middleware' => 'auth'],function(){
     //this is the route for the punguzo
     Route::get('punguzo',[FrontEndController::class,'punguzo'])->name('punguzo');
 
+    //this is the route for the sajili bidhaa
+    Route::get('sajilbidhaa',[FrontEndController::class,'sbidhaa'])->name('sajilbidhaa');
+    Route::post('sajilbidhaa/add',[BackendController::class,'createsbidhaa'])->name('sajilbidhaa.add');
+    Route::post('sajilbidhaa/delete/{id}',[BackendController::class,'deletesbidhaa']);
+    Route::post('sajilbidhaa/edit/{id}',[BackendController::class,'editsbidhaa']);
+
+
     //this is the route for the welcome
     Route::get('cart',[FrontEndController::class,'cart']);
     Route::post('deleteCart',[FrontEndController::class,'deleteCart']);
@@ -104,6 +118,14 @@ Route::group(['middleware' => 'auth'],function(){
     Route::get('report',[FrontEndController::class,'report'])->name('report');
     Route::get('reportPrint',[FrontEndController::class,'reportPrint'])->name('reportPrint');
     Route::post('exportPDF',[FrontEndController::class,'exportPDF'])->name('exportPDF');
+
+    // graph
+    // Route::get('dashboard', [FrontEndController::class, 'salesChart'])->name('dashboard');
+
+
+
+
+
 
     Route::get('logout',[BackendController::class,'logout'])->name('logout');
 
@@ -114,6 +136,7 @@ Route::group(['middleware' => 'auth'],function(){
     Route::delete('matawi/delete/{id}',[BackendController::class,'deleteBranch']);
     Route::post('matawi/edit/{id}',[BackendController::class,'editBranch']);
 
+ 
 
     Route::post('wauzaji/create',[BackendController::class,'createUser'])->name('wauzaji.create');
     Route::delete('wauzaji/delete/{id}',[BackendController::class,'deleteUser']);
@@ -138,6 +161,7 @@ Route::group(['middleware' => 'auth'],function(){
     Route::get('previewPDF/{id}',[BackendController::class,'previewPDF'])->name('previewPDF');
     Route::post('addrole', [BackendController::class, 'addrole']);
     Route::post('changepassword', [BackendController::class, 'changepassword']);
+    Route::post('changeinfo', [BackendController::class, 'changeinfo']);
     Route::post('deleterole/{id}', [BackendController::class, 'deleterole']);
     Route::get('editorder/{id}',[FrontEndController::class, 'editorder'])->name('editorder');
     Route::get('update/{id}',[BackEndController::class, 'update'])->name('updateorder');
@@ -156,6 +180,7 @@ Route::post('editRole/{id}',[BackendController::class, 'editRole']);
 
 Route::get('sidebar',[BackendController::class, 'sidebar']);
 Route::get('order',[FrontEndController::class, 'order'])->name('order');
+
 
 
 
