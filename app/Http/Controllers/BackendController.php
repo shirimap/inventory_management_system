@@ -24,7 +24,19 @@ use App\Imports\ProductImport;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
+use App\Mail\NewProductNotification;
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\SendAutomaticEmail;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
+use App\Events\NewProductRegistered;
+// use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 
 
 class BackendController extends Controller
@@ -250,12 +262,11 @@ class BackendController extends Controller
 
 
         //    dd($user->last_login);
+        Alert::success('message','login successful');
+        return redirect('/dashboard');
+    }
 
-           Alert::success('message','login successful');
-            return redirect('/dashboard');
-        }
-        Alert::error('message','Tafadhali Hakiki taarifa zako');     
-        return redirect()->back();
+    return back()->with('error','Tafadhali Hakiki taarifa zako, Kisha ujaribu tena');
         
 
 
@@ -284,26 +295,45 @@ class BackendController extends Controller
 
 public function report(Request $request)
     {
+        $bidhaa=Sbidhaa::get();
         $fromDate = $request->input('fromDate');
         $toDate   = $request->input('toDate');
         $other    = $request->input('other');
         $role = Role::all();
         if(count($request->all()) > 0){
-            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
-            return view('layouts.report',compact('query','role','pius'));
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
+            ->groupBy('product_id')->whereHas('product', function ($query) use ($other) {
+                $query->where('sbidhaa_id', 'like', '%' . $other . '%');
+            })
+            
+                ->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59",$other))->get();
+            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->where('status','IMEUZWA')->sum('total_amount');
+          
+            
+                    $sikup = Sell::join('products', 'products.id', '=', 'sells.product_id')
+                    ->where('sells.status', 'IMEUZWA')
+                    ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23::59:59"])
+                    ->sum(\DB::raw('sells.profit * sells.quantity'));
+            
+            return view('layouts.report',compact('query','role','pius','sikup','bidhaa'));
         }
         else{
-            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id')->get();
-            $pius =Sell::sum('amount');
-            return view('layouts.report',compact('query','role','pius'));
+            $bidhaa=Sbidhaa::get();
+            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
+                    ->groupBy('product_id')->get();
+            //$sikup=sell::with('product')->select('pprofit')->get();
+            $pius =Sell::where('status','IMEUZWA')->sum('total_amount');
+            $sikup=Sell::join('products', 'products.id', '=', 'sells.product_id')
+                    ->where('sells.status','IMEUZWA')
+                    ->sum(\DB::raw('sells.profit * sells.quantity'));
+            return view('layouts.report',compact('query','role','pius','sikup','bidhaa'));
         }
     }
 
 
     
 
-    public function delete($id)
+public function delete($id)
     {
         Order::where('id',$id)->delete();
         return redirect()->back()->with('message','Umefanikiwa Kufuta!');
@@ -328,7 +358,7 @@ public function report(Request $request)
     }
 
     
-// ===============product functions===================
+// ===============product_functions===================
 public function createProduct(Request $request){
     $date = Carbon::now();
     $net_amount = $request->amount - (($request->discount / 100)*$request->amount);
@@ -343,28 +373,61 @@ public function createProduct(Request $request){
      ]);
      
       if ($validate->fails()){
+        
          $messages = $validate->messages();
          Alert::error('message','Kuna Kosa wakati wa uwekaji Taarifa');
          return redirect()->back();
       }
-
-     $product = new Product;
-     $product->quantity = $request->quantity;
+        
+     $a=$request->quantity;
+     $b=$request->sub_quantity;
+     $c=$request->category;
+    
+     
+     if($c==1){
+     $product = new Product;      
+     $product->quantity = $a;
      $product->bprice = $request->bprice;
      $product->amount = $request->amount;
      $product->capital = $request->amount * $request->quantity;
-     $product->pprofit =($request->amount - $request->bprice)*$request->quantity;
-     $product->sub_quantity = $request->sub_quantity;
-     $product->sub_amount = $request->sub_amount;
+     $product->pprofit =($request->amount - $request->bprice);
+     $product->sub_quantity = $b;
+     $product->sub_amount = $request->amount;
      $product->net_amount = $net_amount;
      $product->total_quantity = $request->sub_quantity * $request->quantity;
      $product->branch_id = $request->branch;
-     $product->category_id = $request->category;
+     $product->category_id = $c;
      $product->sbidhaa_id = $request->sbidhaa;
      $product->discount=$request->discount;
      $product->created_at = $date;
+   
      $product->save();
+     }
+     elseif($c==2){
+       $product = new Product;      
+       $product->quantity = $a*$b;
+       $product->bprice = $request->bprice;
+       $product->amount = $request->amount;
+       $product->capital = $request->amount * $request->quantity;
+       $product->pprofit =($request->amount - $request->bprice);
+       $product->sub_quantity = $b;
+       $product->sub_amount = $request->amount;
+       $product->net_amount = $net_amount;
+       $product->total_quantity = $request->sub_quantity * $request->quantity;
+       $product->branch_id = $request->branch;
+       $product->category_id = $c;
+       $product->sbidhaa_id = $request->sbidhaa;
+       $product->discount=$request->discount;
+       $product->created_at = $date;
+       $product->save();
+       }
+    else{
+        Alert::error('message','Hamna kitu');
+        return redirect()->back(); 
+    }
+    
      Alert::success('message','Taarifa zimeingia kikamilifu');
+    
      return redirect()->back();
  }
 
@@ -399,7 +462,7 @@ public function editProduct(Request $request, $id){
     $net_amount = $request->amount - (($request->discount / 100)*$request->amount);
     $validate = Validator::make($request->all(),[
         
-        'quantity'=>'required',
+        // 'quantity'=>'required',
         'bprice'=>'required',
         'amount'=>'required',
         'branch'=>'required',
@@ -411,24 +474,53 @@ public function editProduct(Request $request, $id){
         $messages = $validate->messages();
         return back()->with('error',$messages);
      }
-
-    $product = Product::find($id);
-    $product->quantity = $request->quantity;
-    $product->bprice = $request->bprice;
-    $product->capital = $request->amount * $request->quantity;
-    $product->pprofit =($request->amount - $request->bprice)*$request->quantity;
-    $product->sub_quantity = $request->sub_quantity;
-    $product->sub_amount = $request->sub_amount;
-    $product->amount = $request->amount;
-    $product->net_amount = $net_amount;
-    $product->branch_id = $request->branch;
-    $product->sbidhaa_id = $request->sbidhaa;
-    $product->discount=$request->discount;
-    $product->created_at = $date;
-    $product->save();
-
-    Alert::success('message','Taarifa zimeingia kikamilifu');     
-    return redirect()->back();
+    
+        $a=$request->quantity;
+        $product = Product::find($id);
+        
+        if($product->category_id==1){
+            $product->quantity = $product->quantity+$a;
+            $product->bprice = $request->bprice;
+            $product->capital = $request->amount * $product->quantity;
+            $product->pprofit =($request->amount - $request->bprice);
+            $product->sub_quantity = $product->sub_quantity;
+            $product->sub_amount = $product->sub_amount;
+            $product->amount = $request->amount;
+            $product->net_amount = $net_amount;
+            $product->branch_id = $request->branch;
+            $product->sbidhaa_id = $request->sbidhaa;
+            $product->discount=$request->discount;
+            $product->updated_at = $date;
+            $product->save();
+        
+            Alert::success('message','Taarifa zimeingia kikamilifu');     
+            return redirect()->back();
+        }
+        elseif($product->category_id==2){
+            $product->quantity = $product->quantity + ($a*$request->sub_quantity);
+            $product->bprice = $request->bprice;
+            $product->capital = $request->amount * $product->quantity;
+            $product->pprofit =($request->amount - $request->bprice);
+            $product->sub_quantity = $request->sub_quantity;
+            $product->sub_amount = $product->sub_amount;
+            $product->amount = $request->amount;
+            $product->net_amount = $net_amount;
+            $product->branch_id = $request->branch;
+            $product->sbidhaa_id = $request->sbidhaa;
+            $product->discount=$request->discount;
+            $product->updated_at = $date;
+            $product->save();
+        
+            Alert::success('message','Taarifa zimeingia kikamilifu');     
+            return redirect()->back();
+        }
+        else{
+            Alert::error('message','Taarifa Zimekosewa');     
+            return redirect()->back();
+        }
+        
+   
+    
     
 }
 
@@ -460,7 +552,7 @@ public function addToCart(Request $request ,$id) // by this function we add prod
         'branch_id'=>$product->branch->id,
         'category_id'=>$product->category->id,
         'sbidhaa_id'=>$product->sbidhaa->name,
-        'sub_quantity'=>$request->sub_quantity,
+        'pprofit'=>$product->pprofit,
         'sub_amount'=>$product->sub_amount,
         ]
         ];
@@ -497,12 +589,12 @@ public function addToCart(Request $request ,$id) // by this function we add prod
         'branch_id'=>$product->branch->id,
         'category_id'=>$product->category->id,
         'sbidhaa_id'=>$product->sbidhaa->name,
-        'sub_quantity'=>$product->sub_quantity,
+        'pprofit'=>$product->pprofit,
         'sub_amount'=>$request->sub_amount,
     ];
 
     session()->put('cart', $cart); // this code put product of choose in cart
-    Alert::success('message', 'Bidhaa imewekwa kikamilifu');
+    //Alert::success('message', 'Bidhaa imewekwa kikamilifu');
 
     return redirect()->back();
 }
@@ -582,7 +674,7 @@ public function updateCart(Request $request)
      $order->phonenumber = $request->phonenumber;
      $order->discount = $request->discount;
      $order->total_quantity = $request->total_quantity;
-     $order->status = "IMEUZWA";
+     $order->status = $request->status;
      $order->vat = $request->vat;
      $order->org_amount = $na;
      $order->total_amount = $nA;
@@ -591,62 +683,64 @@ public function updateCart(Request $request)
      $mi = new MultipleIterator();
      $mi->attachIterator(new ArrayIterator($request->product));
      $mi->attachIterator(new ArrayIterator($request->quantity));
-     $mi->attachIterator(new ArrayIterator($request->sub_quantity));
+     $mi->attachIterator(new ArrayIterator($request->pprofit));
      $mi->attachIterator(new ArrayIterator($request->amount));
 
-     foreach($mi as list($p,$q,$s,$a)){
+     foreach($mi as list($p,$q,$a)){
         $product = Product::find($p);
         if($product->category_id == 2){
-            $total = $product->total_quantity-(($product->sub_quantity * $q)+($s));
-           $qunt = $total/$product->sub_quantity;
-           //$maxDeduction= min(($q+$s),$product->quantity*$product->sub_quntity);
+            $total = $product->quantity-$q;
+            $capitals=$total*$product->amount;
            
-           // dd($product->total_quantity-($product->sub_quantity*$product->quantity));
-            //$len =strlen($product->sub_quantity);
-            //$round=$total-($qunt*$product->sub_quantity);
-           // dd($round);
-           // dd($qunt-(($product->sub_quantity-1)/10**$len));
-            //$pius =$product->capital-$total;////////pius
-
-            // $product->sub_quantity=max(0,min($total,$sub_quntity));
-            $product->total_quantity = $total;
-            $product->quantity=$qunt;
+            $product->quantity = $total;
+           $product->capital=$capitals;
             //$product->capital=$pius;
             $product->save();
+            // $this->sendSMS();
         }else{
             $product->quantity=$product->quantity - $q;
+
+            $capitals=( $product->quantity*$product->amount);
+            //dd($capitals);
+            $product->capital=$capitals;
+            
+           
            // $product->capital=$product->capital-$p;
             $product->save();
+            
         }
+        $this->sendSMS();
      }
 
-     foreach($mi as list($p,$q,$s,$a)){
+     foreach($mi as list($p,$q,$t,$a)){
         $product = Product::find($p);
         $sells = new Sell;
         $sells->customer_name = $request->customer_name;
         $sells->address = $request->address;
         $sells->TIN = $request->TIN;
         $sells->VRN = $request->VRN;
+        
         $sells->phonenumber = $request->phonenumber;
         $sells->order_id = $order->id;
-        $sells->status = "IMEUZWA";
+        $sells->status =$request->status;
         $sells -> product_id = $p;
         if($product->category_id == 2){
-
-        $sells -> quantity = $q*$product->sub_quantity + $s;
-
-        $sells -> amount = $product->sub_amount;
+        $sells->profit=$t*$q;
+        $sells -> quantity = $q;
+        $sells -> total_amount = $a*$q;
+        // $sells->net_amount=$a*$q;
         $sells->save();
         }
         else{
+            $sells->profit=$t*$q;
             $sells -> quantity = $q;
-            $sells -> amount = $a;
+            $sells -> total_amount = $a*$q;
+            // $sells->net_amount=$a*$q;
             $sells->save();
         }
 
 }
-    //  $product->quantity = $product->quantity - $a;
-    //  $product->save();
+   
      $request->session()->forget('cart');
      Alert::success('message','Taarifa zimeingia kikamilifu');
      return back();
@@ -825,7 +919,7 @@ $nA = $nA+$na;
  $mi->attachIterator(new ArrayIterator($request->product));
 
  $mi->attachIterator(new ArrayIterator($request->quantity));
- $mi->attachIterator(new ArrayIterator($request->sub_quantity));
+ $mi->attachIterator(new ArrayIterator($request->quantity));
  $mi->attachIterator(new ArrayIterator($request->amount));
 
 
@@ -844,12 +938,12 @@ $nA = $nA+$na;
 
     $sells -> quantity = $q*$product->sub_quantity + $s;
 
-    $sells -> amount = $product->sub_amount;
+    $sells -> total_amount = $product->sub_amount;
     $sells->save();
     }
     else{
         $sells -> quantity = $q;
-        $sells -> amount = $a;
+        $sells -> total_amount = $a;
         $sells->save();
     }
 
@@ -1001,6 +1095,7 @@ public function updateShop(Request $request,$id){
          $validate = Validator::make($request->all(),[
              'name'=>'required',
              'type'=>'required',
+             'threshold'=>'required',
           
  
          ]);
@@ -1015,12 +1110,55 @@ public function updateShop(Request $request,$id){
          $sbidhaa = Sbidhaa::create([
              'name'=> $request->name,
              'type'=>$request->type,
+             'threshold'=>$request->threshold,
              'created_at'=> $date,
-         ]);
+         ]);      
+                   
+         
          Alert::success('message','Taarifa zimeingia kikamilifu');
          return back();
         
      }
+
+    //  sendsm function when product is out of stock
+     private function sendSMS()
+     {        
+        $client = new Client();
+        $apiUrl = 'http://smsportal.imartgroup.co.tz/app/smsapi/index.php';
+        $apiKey = '36281862404933';
+        $routeId = 8;
+        $senderId = 'Spring-Tech';
+
+        $products = Product::all();
+
+        foreach ($products as $product) {
+            $sbidhaa = Sbidhaa::find($product->sbidhaa_id);
+
+            // Check if the current quantity is below or equal to the threshold
+            if ($product->quantity <= $sbidhaa->threshold) {
+                $phone_number = 756007671; // Replace with the recipient's phone number
+
+                $sms = 'The product ' . $sbidhaa->name . ' is out of stock!';
+
+                $params = [
+                    'campaign' => 266,
+                    'routeid' => $routeId,
+                    'key' => $apiKey,
+                    'type' => 'text',
+                    'contacts' => $phone_number,
+                    'senderid' => $senderId,
+                    'msg' => $sms,
+                ];
+
+                $client->request('GET', $apiUrl, ['query' => $params]);
+
+                // You can add additional error handling or logging here
+            }
+        }
+
+        $this->info('Stock notifications sent successfully!');
+     }
+     
      public function deletesbidhaa($id){
 
         $product = sbidhaa::where('id',$id)->delete();
@@ -1045,6 +1183,7 @@ public function updateShop(Request $request,$id){
         $validate = Validator::make($request->all(),[
           'name'=>'required',
           'type'=>'required',
+          'threshold'=>'required',
       ]);
 
       if ($validate->fails()){
@@ -1056,9 +1195,11 @@ public function updateShop(Request $request,$id){
           [
           'name'=> $request->name,
           'type'=>$request->type,
+          'threshold'=>$request->threshold,
           'updated_at'=>$date
       ]
-  );
+        );
+        $this->sendSMS();
   Alert::success('message','Taarifa zimebadilika kikamilifu');
   return back();
 
@@ -1071,19 +1212,26 @@ public function updateShop(Request $request,$id){
     $role = Role::all();
     if(count($request->all()) > 0){
         $pdf = new PDF();
-        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-        $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+        $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('total_amount');
+        
+
+        // $ =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('quntity');
         $pdf->loadView('layouts.reportPrint',compact('query','role','pius'));
         return $pdf->stream('mauzo.pdf');
     }
     else{
         
         
-        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(amount) as amount'))->groupBy('product_id')->get();
-        $pius =Sell::sum('amount');
+        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'))->groupBy('product_id')->get();
+        $pius =Sell::sum('total_amount');
+        
         $pdf = new PDF();
         $pdf->loadView('layouts.reportPrint',compact('query','role','pius'));
         return $pdf->stream('reportPrint.pdf');
     }
 }
+
+
+
 }

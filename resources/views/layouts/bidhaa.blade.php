@@ -14,12 +14,12 @@
 
                 <!-- /alert -->
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><i class="nav-icon fa fa-th"></i> Bidhaa</h1>
+                    <h1 class="m-0 text-dark"><i class="nav-icon fa fa-th"></i>Product</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Nyumbani</a></li>
-                        <li class="breadcrumb-item active">Bidhaa</li>
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Product</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -32,17 +32,15 @@
 
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
-
-
         </div>
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title"><i class="nav-icon fa fa-th"></i> Bidhaa zilizopo</h3>
+                <h3 class="card-title"><i class="nav-icon fa fa-th"></i> Products Available</h3>
                 @can('ongeza-bidhaa')
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-lg-file">
-                    <span class="fa fa-file"></span> Weka File la Bidhaa mpya</button>
-                <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-lg1">
-                    <span class="fa fa-plus"></span> Weka Bidhaa Mpya</button>
+                <button type="button" class="btn btn-secondary float-right" data-toggle="modal" data-target="#modal-lg-file">
+                    <span class="fa fa-file"></span> Upload File</button>
+                <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#modal-lg1">
+                    <span class="fa fa-plus"></span> Add Product</button>
                 @endcan
             </div>
             <!-- /.card-header -->
@@ -51,17 +49,18 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Bidhaa</th>
-                            <th>Aina</th>
-                            <th>kununua</th>
-                            <th>Kuuza</th>
-                            <th>Idadi</th>
-                            <th>Faida</th>
-                            <th>Punguzo %</th>
-                            <th>Jumla</th>
-                            <th>Tawi</th>
-                            <th>Tarehe</th>
-                            <th>Vitendo</th>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th>Buying Price</th>
+                            <th>Selling Price</th>
+                            <th>Quantity</th>
+                            <th>Profit</th>
+                            <th>Discount %</th>
+                            <th>Total Amount</th>
+                            <th>Branch</th>
+                            <th>Created_at</th>
+                            <th>Updated_at</th>
+                            <th>Action</th>
 
                         </tr>
                     </thead>
@@ -70,43 +69,55 @@
                         <tr>
                             <td>{{ $loop->iteration }} </td>
                             <td><b>{{ $p->sbidhaa->name }}</b></td>
-                            <td>{{ $p->sbidhaa->type}}</td>
-                            <td>{{$p->bprice}}</td>
+                            <td>{{$p->sbidhaa->type}}</td>
+                            <td>{{number_format($p->bprice)}}</td>
                             @if ($p->discount > 0 )
                             <td><strike
-                                    style="text-decoration-thickness: 2px; text-decoration-color: red">{{ $p->amount }}</span></strike>
+                                    style="text-decoration-thickness: 2px; text-decoration-color: red; ">{{ number_format($p->amount) }}</span></strike>
                                 <br>
-                                {{ $p->net_amount }}
+                                {{ number_format($p->net_amount) }}
                             </td>
 
                             @else
-                            <td>{{ $p->net_amount }}<br>
-                                @if(!@empty($p->sub_amount))
-                                {{  $p->sub_amount}}
+                            <td>
+                                @if($p->category_id == 1) <b>{{number_format($p->net_amount)}}</b>
+                                @else
+                                <b>{{number_format($p->net_amount)}}</b>
                                 @endif
 
                             </td>
 
                             @endif
                             <td>
-                                @if($p->quantity <= 10) <b style="color:red;">{{ $p->quantity }}</b>
+                                @if($p->category_id == 1)
+                                    @if($p->quantity <= $p->sbidhaa->threshold)
+                                    <span class="badge badge-danger">{{ $p->quantity }}</span>
                                     @else
-                                    <b style="color:blue;">{{ $p->quantity }}</b>
+                                    <span class="badge badge-info">{{ $p->quantity }}</span>
                                     @endif
+
+                                @else
+                                @if($p->quantity <= $p->sbidhaa->threshold)
+                                    <span class="badge badge-danger">{{ $p->quantity }}</span>
+                                    @else
+                                    <span class="badge badge-info">{{ $p->quantity }}</span>
+                                    @endif
+                                @endif
 
                             </td>
                             <td>
-                                @if($p->pprofit <= 0) <b style="color:red;">{{ $p->pprofit }}</b>
+                                @if($p->pprofit <= 0) <b style="color:red;">{{number_format($p->pprofit) }}</b>
                                     @else
-                                    {{ $p->pprofit }}
+                                    {{ number_format($p->pprofit) }}
                                     @endif
 
                             </td>
                             <td>{{ $p->discount }}%</td>
-                            <td>{{ $p->capital }}</td>
+                            <td><b>{{number_format($p->capital) }}</b></td>
                             <td>{{ $p->branch->name }}</td>
 
                             <td>{{$p->created_at->format('d-m-Y h:i A') }}</td>
+                            <td>{{$p->updated_at->format('d-m-Y h:i A') }}</td>
                             <td>
                                 @can('hariri-bidhaa')
                                 <a type="button" class="btn btn-sm btn-primary" style="color:white;" data-toggle="modal"
@@ -169,7 +180,7 @@
                                                     <div class="col col-md-12">
                                                         <label>Chagua Bidhaa</label>
                                                         <select name="sbidhaa" class="form-control">
-                                                                                                                
+
                                                             @foreach ($data as $role)
                                                             @if ($role->id == $p->sbidhaa->id)
                                                             <option value="{{ $p->sbidhaa->id }}" selected>
@@ -180,7 +191,7 @@
                                                                 {{ $role->name }}-{{ $role->type }}</option>
                                                             @endif
                                                             @endforeach
-                                                            
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -197,8 +208,8 @@
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <label>Quantity</label>
-                                                        <input type="number" name="quantity" min="0" step="0.25"
-                                                            class="form-control" value="{{ $p->quantity }}" required>
+                                                        <input type="number" name="quantity"
+                                                            class="form-control" >
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <label>Tawi</label>
@@ -225,26 +236,22 @@
                                                         <label>Kipengele</label>
                                                         <select class="form-control" name="category"
                                                             onchange="enanbleCategory(this)">
-                                                            <option disabled selected value>{{ $p->category->name }}</option>
+                                                            <option disabled selected value>{{ $p->category->name }}
+                                                            </option>
                                                             @foreach ($categories as $t)
                                                             <option value="{{ $t->id }}">{{ $t->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
 
-                                                    @if(!@empty($p->sub_amount))
+                                                    @if($p->category_id==2)
                                                     <div class="col col-md-6">
                                                         <label>idadi(kupimwa Jumla)</label>
                                                         <input type="number" name="sub_quantity" min="0" step="0.25"
                                                             value="{{ $p->sub_quantity }}" class="form-control"
                                                             placeholder="weka punguzo la bidhaa..." required>
                                                     </div>
-                                                    <div class="col col-md-6">
-                                                        <label>bei kipimo</label>
-                                                        <input type="number" name="sub_amount" min="0" step="0.25"
-                                                            class="form-control" value="{{ $p->sub_amount }}" required>
-                                                    </div>
-
+                                                   
                                                     @can('ongeza-punguzo')
                                                     <div class="col col-md-6">
                                                         <label>punguzo</label>
@@ -256,7 +263,8 @@
                                                         <label>punguzo</label>
                                                         <input type="number" name="discount" class="form-control"
                                                             value="{{ $p->discount }}" required>
-                                                    </div>
+                                                    </div>                         
+                                                   
                                                     @endcan
                                                 </div>
                                                 @endif
@@ -360,21 +368,7 @@
                                 placeholder="weka punguzo la bidhaa..." required>
 
                         </div>
-                        <div class="col col-md-6 d-nones" id="kupimwaa">
-                            <label>Bei kwa kipimo</label>
-                            <input type="number" step="0.25" name="sub_amount" min="0" value="0" class="form-control"
-                                placeholder="weka punguzo la bidhaa..." required>
-                        </div>
 
-                        <!-- <div class="col col-md-6 d-nones" id="kupi">
-
-                            <label>Bei kwa kipimo</label>
-                            <select>
-                                <option value="m">Metre</option>
-                                <option value="cm">Centimetre</option>
-                                <option value="mm">MilliMetre</option>
-                            </select>
-                        </div>  -->
 
                         @can('ongeza-punguzo')
                         <div class="col col-md-6">

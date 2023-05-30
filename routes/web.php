@@ -5,6 +5,8 @@ use App\Http\controllers\FrontEndController;
 use App\Http\controllers\BackendController;
 
 
+use App\Mail\MyTestEmail;
+use Illuminate\Support\Facades\Mail;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,15 +33,18 @@ Route::get('/',[FrontEndController::class,'showlogin'])->name('showlogin');
 ################ Branch  ################################
 
 
-Route::post('login',[BackendController::class,'login']);
+Route::post('login',[BackEndController::class,'login']);
 
 
 //dont touch from this route  write your routes above this route
 
 Route::group(['middleware' => 'auth'],function(){
+   
     Route::get('dashboard',[FrontEndController::class,'dashboard'])->name('dashboard');
+    
     Route::get('index',[FrontEndController::class,'index']);
 
+    Route::post('/send-sms', [BackEndController::class, 'sendSMS']);
 
     // this is the route for the product page
     Route::get('product',[FrontEndController::class,'product'])->name('product');
@@ -59,8 +64,8 @@ Route::group(['middleware' => 'auth'],function(){
     //this is the route for the empty
     Route::get('empty',[FrontEndController::class,'empty'])->name('empty');
 
-    //this is the route for the profile
-    Route::get('profile',[FrontEndController::class,'profile'])->name('profile');
+    //this is the route for the madeni
+    Route::get('madeni',[FrontEndController::class,'madeni'])->name('madeni');
 
     //this is the router for the historiamauzo
     Route::get('historiamauzo',[FrontEndController::class,'historiamauzo']);
@@ -124,7 +129,7 @@ Route::group(['middleware' => 'auth'],function(){
 
 
 
-
+    Route::get('emails/out_of_stock',[FrontEndController::class,'build'])->name('build');
 
 
     Route::get('logout',[BackendController::class,'logout'])->name('logout');
@@ -181,7 +186,7 @@ Route::post('editRole/{id}',[BackendController::class, 'editRole']);
 Route::get('sidebar',[BackendController::class, 'sidebar']);
 Route::get('order',[FrontEndController::class, 'order'])->name('order');
 
-
+Route::get('/sajilibidhaa', [BackendController::class,'sendSms'])->name('sendSms');
 
 
 

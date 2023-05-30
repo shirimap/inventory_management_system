@@ -34,25 +34,21 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="{{URL::asset('dist/js/pages/dashboard.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{URL::asset('dist/js/demo.js')}}"></script>
+
+
+
+
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{{ URL::asset('dist/js/pages/dashboard3.js')}}"></script>
 <!-- DataTables -->
 <script src="{{URL::asset('plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
-<script src="{{URL::asset('plugins/moment/moment.min.js')}}"></script>
+
 <script src="{{URL::asset('plugins/inputmask/min/jquery.inputmask.bundle.min.js')}}"></script>
 <script src="{{URL::asset('plugins/select2/js/select2.full.min.js')}}"></script>
 <script src="{{URL::asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
 <script src="{{URL::asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
 <script src="{{URL::asset('plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
 <script src="{{URL::asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
-
-<!-- jQuery -->
-<script src="{{ URL::asset('plugins/jquery/jquery.min.js')}}"></script>
-<!-- Bootstrap 4 -->
-<script src="{{ URL::asset('plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-<!-- DataTables  & Plugins -->
-<script src="{{ URL::asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
-<script src="{{ URL::asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
-<script src="{{ URL::asset('plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
-<script src="{{ URL::asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
 <script src="{{ URL::asset('plugins/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
 <script src="{{ URL::asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
 <script src="{{ URL::asset('plugins/jszip/jszip.min.js')}}"></script>
@@ -61,6 +57,8 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="{{ URL::asset('plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
 <script src="{{ URL::asset('plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
 <script src="{{ URL::asset('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+
+
 <script>
 $(function() {
     $("#example1").DataTable({
@@ -137,11 +135,11 @@ $(function() {
                 'Mwezi uliopita': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
                     'month').endOf('month')]
             },
-            startDate: moment().subtract(29, 'days'),
-            endDate: moment()
+            $fromDate: moment().subtract(29, 'days'),
+            $toDate: moment()
         },
         function(start, end) {
-            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+            $('#reportrange span').html(fromDate.format('MMMM D, YYYY') + ' - ' + toDate.format('MMMM D, YYYY'))
         }
     )
 
@@ -168,6 +166,11 @@ $(function() {
 
 })
 </script>
+
+
+
+
+
 
 {{--  <script>
     const export2Pdf = async () => {

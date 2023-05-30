@@ -11,13 +11,14 @@
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown user user-menu">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-
+                
                 <?php $shop = App\Models\ShopInfo::all() ?>
+                <span class="hidden-xs">{{ Auth::user()->first_name }} </span>
+
                 @foreach($shop as $shop)
                 <img src="{{ asset('dist/img/user2-160x160.jpg')}}" class="user-image img-circle elevation-2 alt=">
                 @endforeach
-                <span class="hidden-xs">{{ Auth::user()->first_name }}
-                    {{ Auth::user()->last_name }}</span>
+
 
                 <!-- <br>@if (empty(Auth::user()->branch->name))
                 <span class="brand-text font-weight-light"></span>
@@ -36,8 +37,14 @@
                     <i class="fas fa-file mr-2"></i> Badili taarifa
                 </a>
             </div>
-            
+
         </li>
+        
+    </ul>
+    <!-- Right Side Of Navbar -->
+    <ul class="navbar-nav ms-auto">
+        <!-- Authentication Links -->
+
     </ul>
 </nav>
 <!-- /.navbar -->
@@ -51,10 +58,10 @@
         <span class="brand-text font-weight" style="font-size: 12px;"><b>{{ $shop->name }}</b></span>
     </a>
     <div class="sidebar">
-   <!-- Sidebar Menu -->
-   <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
                 <li class="nav-item menu-open">
                     <a href="{{ route( 'dashboard') }}" class="nav-link {{Request::is('dashboard')?'active':''}} ">
@@ -64,13 +71,13 @@
                         </p>
                     </a>
                 </li>
-                
+
                 @can('wasimamizi-duka')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
+                        <i class="nav-icon fas fa-store"></i>
                         <p>
-                            Usimamizi wa Duka
+                            Shop Management
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -78,19 +85,19 @@
                         <li class="nav-item">
                             <a href="{{ route('matawi') }}" class="nav-link {{Request::is('matawi')?'active':''}}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Matawi</p>
+                                <p>Branch</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('jukumu') }}" class="nav-link {{Request::is('jukumu')?'active':''}}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Jukumu</p>
+                                <p>Roles</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('wauzaji') }}" class="nav-link {{Request::is('wauzaji')?'active':''}}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>wauzaji</p>
+                                <p>Users</p>
                             </a>
                         </li>
                     </ul>
@@ -100,36 +107,37 @@
                 @can('ona-bidhaa')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                        <i class="nav-icon fas fa-shopping-bag"></i>
                         <p>
-                            Usimamizi wa Bidhaa
+                            Product Management
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('sajilbidhaa') }}" class="nav-link {{Request::is('sajilbidhaa')?'active':''}}">
+                            <a href="{{ route('sajilbidhaa') }}"
+                                class="nav-link {{Request::is('sajilbidhaa')?'active':''}}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Sajili Bidhaa</p>
+                                <p>Add Product</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('bidhaa') }}" class="nav-link {{Request::is('bidhaa')?'active':''}}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Bidhaa</p>
+                                <p>Products</p>
                             </a>
                         </li>
-                      
+
                     </ul>
                 </li>
-                
+
                 @endcan
                 @can('fanya-mauzo')
                 <li class="nav-item has-treeview">
                     <a href="{{ route('mauzo') }}" class="nav-link {{Request::is('mauzo')?'active':''}}">
                         <i class="nav-icon fas fa-shopping-cart "></i>
                         <p>
-                            Mauzo
+                            Sales
                         </p>
                     </a>
                 </li>
@@ -139,69 +147,68 @@
 
                 <li class="nav-item">
                     <a href="{{ route('mauzomuuzaji') }}" class="nav-link {{Request::is('mauzomuuzaji')?'active':''}}">
-                        <i class="nav-icon fa  fa-th"></i>
+                        <i class="nav-icon fa  fa-history"></i>
                         <p>
-                            Historia ya mauzo
+                            Sales History
                         </p>
                     </a>
                 </li>
-            
+
                 @endcan
                 @can('ona-order')
                 <li class="nav-item">
                     <a href="{{ route('order') }}" class="nav-link {{Request::is('order')?'active':''}}">
-                        <i class="nav-icon fa  fa-th"></i>
+                        <i class="nav-icon fa  fa-history"></i>
                         <p>
-                            Historia ya Order
+                            Order History
                         </p>
                     </a>
                 </li>
                 @endcan
-                
+
                 <li class="nav-item">
                     <a href="{{ route('order') }}" class="nav-link">
-                        <i class="nav-icon fa  fa-th"></i>
+                        <i class="nav-icon fa  fa-history"></i>
                         <p>
-                            Historia ya Order
+                        Order History
                         </p>
                     </a>
                 </li>
-                
-            
+                <li class="nav-item">
+                    <a href="{{ route('madeni') }}" class="nav-link">
+                        <i class="nav-icon fas fa-minus-circle"></i>
+                        <p>
+                            Debits
+                        </p>
+                    </a>
+                </li>
+               
                 <li class="nav-item">
                     <a href="{{ route('matumizi') }}" class="nav-link {{Request::is('matumizi')?'active':''}}">
-                        <i class="nav-icon fa fa-folder-open"></i>
+                        <i class="nav-icon fa fa-money-bill"></i>
                         <p>
-                            Matumizi
+                            Expenses
                         </p>
                     </a>
                 </li>
-              
+
                 @can('tengeneza-report')
                 <li class="nav-item">
                     <a href="{{ route('report') }}" class="nav-link {{Request::is('report')?'active':''}}">
-                        <i class="nav-icon fa fa-folder-open"></i>
+                        <i class="nav-icon fa fa-file-alt"></i>
                         <p>
-                            Ripoti
+                            Report
                         </p>
                     </a>
                 </li>
                 @endcan
-               
-                <li class="nav-item has-treeview">
-                    <a href="{{ route('profile') }}" class="nav-link">
-                        <i class="nav-icon fa fa-user"></i>
-                        <p>
-                            Wasifu
-                        </p>
-                    </a>
-                </li>
-                @can('wasimamizi-duka')
+
+                 @can('wasimamizi-duka')
                 <li class="nav-item">
                     <a href="{{ route('punguzo') }}" class="nav-link {{Request::is('punguzo')?'active':''}}">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>
-                            Mfumo
+                            Settings
                         </p>
                     </a>
                 </li>
@@ -209,7 +216,7 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('logout') }}" class="nav-link">
-                        <i class="nav-icon fa fa-power-off"></i>
+                        <i class="nav-icon fa fa-sign-out-alt"></i>
                         <p>
                             Logout
                         </p>
@@ -221,6 +228,109 @@
     </div>
     <!-- /.sidebar -->
 </aside>
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Badili password</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="changepassword" method="POST">
+                    @csrf
+                    <div class="row">
+                        <div class="col col-md-12">
+                            <label>Password ya zamani</label>
+                            <input type="text" name="old" class="form-control" placeholder="Password ya zamani">
+                        </div>
+                        <div class="col col-md-12">
+                            <label>
+                                <p>Password mpya</p>
+                            </label>
+                            <input type="text" name="new" class="form-control" placeholder="Password mpya">
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
+                        <button type="submit" class="btn btn-primary">Badili</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="changeinfo" method="POST">
+    @csrf
+    <div class="modal fade" id="modal-lg">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Badili taarifa</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    <div class="row">
+                        <div class="col col-md-6">
+                            <label>Jina la kwanza</label>
+                            <input type="text" name="first_name" class="form-control"
+                                value="{{ Auth::user()->first_name }}" required>
+                        </div>
+                        <div class="col col-md-6">
+                            <label>Jina la Pili</label>
+                            <input type="text" name="last_name" class="form-control"
+                                value="{{ Auth::user()->last_name }}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6">
+                            <label>Anwani</label>
+                            <input type="text" name="address" class="form-control" value="{{ Auth::user()->address }}"
+                                required>
+                        </div>
+                        <div class="col col-md-6">
+                            <label>Namba ya simu</label>
+                            <input type="text" name="phone" class="form-control" value="{{ Auth::user()->phone }}"
+                                required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6">
+                            <label>Barua pepe</label>
+                            <input type="email" name="email" class="form-control" value="{{ Auth::user()->email }}"
+                                required>
+                        </div>
+                        <div class="col col-md-6">
+                            <label>Jinsia</label>
+                            <select class="form-control" name="gender">
+                                <option>--</option>
+                                @if(Auth::user()->gender == "MME")
+                                <option value="MME" selected>MME</option>
+                                <option value="MKE">MKE</option>
+                                @else
+                                <option value="MME">MME</option>
+                                <option value="MKE" selected>MKE</option>
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
+                    <button type="submit" class="btn btn-primary">Ongeza</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</form>
 
 
 @include('includes/script')

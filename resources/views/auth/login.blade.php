@@ -33,6 +33,7 @@
                     <p color="white">{{ session()->get('error') }}
                 </div>
                 @endif
+                
                 <form action="/login" method="post">
                     @csrf
                     <div class="input-group mb-3">

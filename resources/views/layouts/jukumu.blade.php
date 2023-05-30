@@ -12,13 +12,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><span class="fa fa-th"></span> Jukumu</h1>
+                    <h1 class="m-0 text-dark"><span class="fa fa-th"></span> Role</h1>
                 </div><!-- /.col -->
 
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Nyumbani</a></li>
-                        <li class="breadcrumb-item active">Jukumu</li>
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Role</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -32,19 +32,19 @@
                 <div class="col-6">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <div class="card-title"><span class="fa fa-th"></span> Ongeza Jukumu</div>
+                            <div class="card-title"><span class="fa fa-th"></span> Add Role</div>
                         </div>
                         <div class="card-body">
 
                             <form action="addrole" method="post">
                                 @csrf
                                 <div class="form-group">
-                                    <label for="">Jina la Jukumu:</label>
+                                    <label for="">Role Name:</label>
                                     <input type="text" name="name" class="form-control" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="">Aina Ya Ruhusa</label>
+                                    <label for="">Permissions:</label>
                                     <div class="row">
                                         @foreach($permission as $permissions)
                                         <div class="col-4">
@@ -56,7 +56,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="submit" value="Ongeza" class="btn btn-primary float-right">
+                                    <input type="submit" value="Save" class="btn btn-primary float-right">
                                 </div>
                             </form>
 
@@ -66,7 +66,7 @@
                 <div class="col-6">
                     <div class="card card-dark">
                         <div class="card-header">
-                            <div class="card-title "><span class="fa fa-th"></span> Majukumu
+                            <div class="card-title "><span class="fa fa-th"></span>Roles List
 
                             </div>
                         </div>
@@ -74,10 +74,10 @@
                         <div class="card-body">
                             <table id="example2" class="table table-sm  table-hover">
                                 <thead>
-                                    <th>Jina</th>
+                                    <th>Name</th>
                                     <th>Idadi</th>
-                                    <th>Tarehe</th>
-                                    <th>kitendo</th>
+                                    <th>Created_at</th>
+                                    <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,10 +89,10 @@
                                         <td>
                                             <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
                                                 data-target="#modal-defaultt{{ $r->id }}"> <span
-                                                    class="fa fa-edit"></span>Hariri</button>
+                                                    class="fa fa-edit"></span>Edit</button>
                                             <button class="btn btn-sm btn-danger" data-toggle="modal"
                                                 data-target="#modal-danger{{ $r->id }}"><span
-                                                    class="fa fa-trash"></span>Futa</button>
+                                                    class="fa fa-trash"></span>Delete</button>
 
                                         </td>
                                     </tr>
@@ -101,7 +101,7 @@
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-header  bg-primary">
-                                                    <h4 class="modal-title">Hariri Jukumu</h4>
+                                                    <h4 class="modal-title">Edit Role</h4>
                                                     <button type="button" class="close" data-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -112,13 +112,13 @@
                                                         @csrf
                                                         <div class="row">
                                                             <div class="col col-md-12">
-                                                                <label>Jina la Jukumu</label>
+                                                                <label>Role Name</label>
                                                                 <input type="text" name="name" class="form-control"
                                                                     value="{{ $r->name }}">
                                                             </div>
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
-                                                                    <label>Aina za ruhusa</label>
+                                                                    <label>Permissions</label>
                                                                    
                                                                     <div class="row">
                                                                     @foreach($permission as $p)
@@ -140,9 +140,9 @@
                                                         </div>
                                                         <div class="modal-footer justify-content-between">
                                                             <button type="button" class="btn btn-danger"
-                                                                data-dismiss="modal">Funga</button>
+                                                                data-dismiss="modal">Cancel</button>
                                                             <button type="submit"
-                                                                class="btn btn-primary">hariri</button>
+                                                                class="btn btn-primary">Update</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -154,7 +154,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-danger">
                                                 <div class="modal-header">
-                                                    <h4 class="modal-title">Ondoa Jukumu</h4>
+                                                    <h4 class="modal-title">Delete Role</h4>
                                                     <button type="button" class="close" data-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -164,13 +164,13 @@
                                                     <form method="POST" action="deleterole/{{$r->id}}">
                                                         @csrf
                                                         <input type="hidden" name="proid" value="">
-                                                        <p>Jukumu hili Litafutwa </p>
+                                                        <p>Role will be deleted</p>
                                                 </div>
                                                 <div class="modal-footer justify-content-between">
                                                     <button type="button" class="btn btn-outline-light"
-                                                        data-dismiss="modal">Funga</button>
+                                                        data-dismiss="modal">Cancel</button>
                                                     <button type="submit" name="remove"
-                                                        class="btn btn-outline-light">Ondoa</button>
+                                                        class="btn btn-outline-light">Delete</button>
 
                                                 </div>
                                                 </form>

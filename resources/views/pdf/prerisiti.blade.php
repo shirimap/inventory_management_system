@@ -338,7 +338,7 @@ tr.border_bottom td{
     </table>
 
 <footer>
-    <p style="text-align: center"><strong>Copyright &copy; 2023 <a href="#">KIMARO Company Co.Ltd</Co></a>.</strong>
+    <p style="text-align: center"><strong>Copyright &copy; 2022 <a href="#">Giraffe Shappers Co.Ltd</Co></a>.</strong>
     All rights reserved.</p>
 
   </footer>

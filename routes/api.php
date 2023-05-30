@@ -60,3 +60,12 @@ Route::get('showMatumizi', [ApiController::class,'showMatumizi']);
 Route::get('getMatumizi/{id}', [ApiController::class,'getMatumizi']);
 Route::post('editMatumizi/{id}', [ApiController::class,'editMatumizi']);
 Route::post('deleteMatumizi/{id}', [ApiController::class,'deleteMatumizi']);
+
+//Sjaili bidhaa
+
+Route::post('createsbidhaa', [ApiController::class,'createMatumizi']);
+Route::get('showbidhaa', [ApiController::class,'showbidhaa']);
+Route::get('getbidhaa/{id}', [ApiController::class,'getbidhaa']);
+Route::post('editsbidhaa/{id}', [ApiController::class,'editsbidhaa']);
+Route::post('deletesbidhaa/{id}', [ApiController::class,'deletesbidhaa']);
+Route::post('/send-sms', [ApiController::class, 'sendSMS']);

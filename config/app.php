@@ -165,6 +165,8 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         ZanySoft\LaravelPDF\PdfServiceProvider::class,
         RealRashid\SweetAlert\SweetAlertServiceProvider::class,
+        
+        
 
         /*
          * Package Service Providers...
@@ -178,6 +180,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\NexmoServiceProvider::class,
         
 
     ],
@@ -237,6 +240,7 @@ return [
         'PDF'=> Barryvdh\DomPDF\Facade::class,
         'PDF' => ZanySoft\LaravelPDF\Facades\PDF::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+      
 
     ],
 

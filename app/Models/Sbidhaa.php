@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Sbidhaa extends Model
 {
     use HasFactory;
-    protected $fillable=['name','type'];
+    protected $fillable=['name','type','threshold'];
 
     public function product()
     {

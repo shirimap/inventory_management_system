@@ -12,6 +12,7 @@ class Sell extends Model
         'order_id',
         'total_amount',
         'invoice',
+        'profit',
         'sales_date',
         'product_id'
       

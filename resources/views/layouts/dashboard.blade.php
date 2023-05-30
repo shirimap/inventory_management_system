@@ -8,12 +8,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Nyumbani</h1>
+                    <h1 class="m-0 text-dark">dashboard</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Nyumbani</li>
+                        <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -30,7 +30,7 @@
                     <div class="info-box bg-dark">
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Wauzaji</span>
+                            <span class="info-box-text">Users</span>
                             <span class="info-box-number">
                                 <h4> {{ $user->count() }}</h4>
                                 <small class="pull-right"><a href="#" class="small-box-footer">More info <i
@@ -45,7 +45,7 @@
                     <div class="info-box bg-dark">
                         <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-users"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Bidhaa</span>
+                            <span class="info-box-text">Products</span>
                             <span class="info-box-number">
                                 <h4> {{ $product->count() }}</h4>
                                 <small class="pull-right"><a href="#" class="small-box-footer">More info <i
@@ -62,9 +62,9 @@
                     <div class="info-box bg-dark">
                         <span class="info-box-icon bg-primary elevation-1"> <i class="fas fa-shopping-cart"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Mauzo</span>
+                            <span class="info-box-text">Total Sales</span>
                             <span class="info-box-number">
-                                <h4>{{ $sell }}<sup style="font-size: 12px"> TZS</sup></h4>
+                                <h4>{{ number_format($sell,2) }}<sup style="font-size: 12px"> TZS</sup></h4>
                                 <small class="pull-right"><a href="#" class="small-box-footer">More info <i
                                             class="fas fa-arrow-circle-right"></i></a></small>
                             </span>
@@ -78,9 +78,9 @@
                     <div class="info-box bg-dark">
                         <span class="info-box-icon bg-danger elevation-1"> <i class="fas fa-shopping-cart"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">thamani Mzigo Uliopo</span>
+                            <span class="info-box-text">Stock</span>
                             <span class="info-box-number">
-                                <h4>{{ $dina }}<sup style="font-size: 12px"> TZS</sup></h4>
+                                <h4>{{ number_format($capital,2) }}<sup style="font-size: 12px"> TZS</sup></h4>
                                 <small class="pull-right"><a href="#" class="small-box-footer">More info <i
                                             class="fas fa-arrow-circle-right"></i></a></small>
                             </span>
@@ -93,9 +93,9 @@
                     <div class="info-box bg-dark">
                         <span class="info-box-icon bg-danger elevation-1"> <i class="fas fa-shopping-cart"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Faida</span>
+                            <span class="info-box-text">Total Profit</span>
                             <span class="info-box-number">
-                            <h4>{{ $pprofit }}<sup style="font-size: 12px"> TZS</sup></h4>
+                            <h4>{{ number_format($pprofit,2) }}<sup style="font-size: 12px"> TZS</sup></h4>
                                 <small class="pull-right"><a href="#" class="small-box-footer">More info <i
                                             class="fas fa-arrow-circle-right"></i></a></small>
                             </span>
@@ -107,11 +107,26 @@
               
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box bg-dark">
-                        <span class="info-box-icon bg-info elevation-1"> <i class="ion ion-pie-graph"></i></span>
+                        <span class="info-box-icon bg-info elevation-1"> <i class="fas fa-plus-circle"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Mauzo Ya Leo</span>
+                            <span class="info-box-text">Todays Sales</span>
                             <span class="info-box-number">
-                                <h4>{{ $todaysales}} <sup style="font-size: 12px"> TZS</sup></h4>
+                                <h4>{{ number_format($todaysales,2) }} <sup style="font-size: 12px"> TZS</sup></h4>
+                                <small class="pull-right"><a href="{{ route('mauzomuuzaji') }}" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-info elevation-1"> <i class="fas fa-plus-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Todayas Profit</span>
+                            <span class="info-box-number">
+                                <h4>{{ number_format($faida)}} <sup style="font-size: 12px"> TZS</sup></h4>
                                 <small class="pull-right"><a href="#" class="small-box-footer">More info <i
                                             class="fas fa-arrow-circle-right"></i></a></small>
                             </span>
@@ -120,7 +135,21 @@
                     </div>
                     <!-- /.info-box -->
                 </div>
-
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box bg-dark">
+                        <span class="info-box-icon bg-danger elevation-1"> <i class="fas fa-minus-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Debits</span>
+                            <span class="info-box-number">
+                                <h4>{{ number_format($madeni)}} <sup style="font-size: 12px"> TZS</sup></h4>
+                                <small class="pull-right"><a href="{{ route('madeni') }}" class="small-box-footer">More info <i
+                                            class="fas fa-arrow-circle-right"></i></a></small>
+                            </span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
             </div>
 
             <div class="row">

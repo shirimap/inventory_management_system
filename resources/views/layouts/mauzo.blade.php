@@ -61,27 +61,42 @@
                                         <td>{{$loop->iteration}}</td>
                                         <td style="width: 150px;"><b>{{ $p->sbidhaa->name }}</b></td>
                                         <td style="width: 150px;"> {{ $p->sbidhaa->type }}</td>
-                                        <td> @if($p->quantity <= 10) <button class="btn btn-sm btn-danger">
-                                                {{ $p->quantity }}</button>
+                                        <td> @if($p->category_id == 1)
+                                            @if($p->quantity <= $p->sbidhaa->threshold)
+                                                <span class="badge badge-danger">{{ $p->quantity }}</span>
                                                 @else
-                                                <button class="btn btn-sm btn-info">{{ $p->quantity }}</button>
+                                                <span class="badge badge-info">{{ $p->quantity }}</span>
                                                 @endif
+
+                                                @else
+                                                @if($p->quantity <= $p->sbidhaa->threshold)
+                                                    <span class="badge badge-danger">{{ $p->quantity }}</span>
+                                                    @else
+                                                    <span class="badge badge-info">{{ $p->quantity }}</span>
+                                                    @endif
+                                                    @endif
                                         </td>
-                                        <td style="width:100px;"> {{ $p->net_amount }}<br>
-                                            @if(!@empty($p->sub_amount))
-                                            {{  $p->sub_amount}}
-                                            @endif</td>
+                                        <td style="width:100px;">@if($p->category_id == 1)
+                                            <b>{{ number_format($p->net_amount) }}</b>
+                                            @else
+                                            <b>{{ number_format($p->net_amount) }}</b>
+                                            @endif
+                                        </td>
 
                                         <form method="post" action="addToCart/{{ $p->id }}">
                                             @csrf
-                                            <td style="width: 20%"> <input class="form-control" type="number" min="0"
-                                                    name="quantity" value="1" style="width: 100%">
-                                                @if($p->category_id == 2)
-                                                kipimo
-                                                <input class="form-control" type="number" name="sub_quantity" min="0"
-                                                    max="{{$p->sub_quantity}}" step="0.5" value="1" style="width: 100%">
+                                            @if($p->category_id == 2)
 
-                                                @endif
+                                            <td>kupima
+                                                <input class="form-control" type="number" name="quantity" min="0" max=""
+                                                    step="0.5" value="1" style="width: 100%">
+                                            </td>
+
+                                            @else
+                                            <td style="width: 20%"> <input class="form-control" type="number" min="0"
+                                                    name="quantity" max="" value="1" style="width: 100%">
+                                            </td>
+                                            @endif
                                             </td>
                                             <td>
                                                 @can('ongeza-mkokoteni')
@@ -112,7 +127,7 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <table id="example" class="table table-striped">
+                            <table id="example" class="table table-sm table-hover table-striped table-bordered">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -128,64 +143,62 @@
                                     <?php $total = 0 ?>
                                     <?php $quantity = 0 ?>
                                     <?php $sub_quantity = 0?>
+                                    <?php $pprofit = 0 ?>
                                     <?php $fullName = ucwords(Auth::user()->first_name)." ". ucwords(Auth::user()->last_name) ?>
+
                                     @if(session('cart'))
                                     @foreach(session('cart') as $id => $details )
                                     <?php
 
-                                    $total+=($details['net_amount'] * $details['quantity'])+($details['sub_amount']* $details['sub_quantity']) ;
-                                    $totals='TZS ' . number_format($total,2).'/=';
-                                    ?>
+                                 $total+=($details['net_amount'] * $details['quantity']) ?>
 
                                     <?php $quantity+=$details['quantity'] ?>
                                     <tr>
-                                        <td>{{$loop->iteration}}</td>
-                                        <td><b>{{ $details['sbidhaa_id'] }}</b></td>
-                                        <td>
-                                            @if($details['category_id'] == 2 and $details['quantity'] > 0)
-                                            {{$details['quantity'] }}.{{ $details['sub_quantity'] }}
-                                            @elseif($details['category_id'] == 2)
-                                            {{$details['sub_quantity'] }}
-                                            @else
-                                            {{ $details['quantity'] }}
-                                            @endif
-                                        </td>
+                                        <td>{{ $loop->iteration }} </td>
+                                        <td><b>{{ $details['sbidhaa_id'] }}</b> </td>
 
                                         <td>
-                                            @if($details['category_id'] == 2 and $details['quantity'] > 0)
-                                            {{ $details['net_amount'] }} {{ $details['sub_amount'] }}
-                                            @elseif($details['category_id'] == 2)
-                                            {{ $details['sub_amount'] }}
+                                            @if($details['category_id'] == 2)
+                                            <span class="badge badge-danger">{{$details['quantity'] }}</span>
+
                                             @else
-                                            {{ $details['net_amount'] }}
+                                            <span class="badge badge-danger">{{$details['quantity'] }}</span>
+
                                             @endif
                                         </td>
+                                        <td>
+                                            @if($details['category_id'] == 2)
+                                            {{ number_format($details['pprofit']) }}
+                                            @else
+                                            {{ number_format($details['net_amount']) }}
+                                            @endif
+
+                                        </td>
+
 
                                         <td>
-                                            @if($details['category_id'] == 2 and $details['quantity'] > 0)
-                                            {{ ($details['net_amount'] * $details['quantity'])+($details['sub_amount']* $details['sub_quantity']) }}
-                                            @elseif($details['category_id'] == 2)
-                                            {{ $details['sub_amount']* $details['sub_quantity'] }}
+                                            @if($details['category_id'] == 2)
+                                            <b>{{ number_format($details['net_amount']* $details['quantity']) }}</b>
                                             @else
-                                            {{ $details['net_amount'] * $details['quantity'] }}
+                                            <b>{{ number_format($details['net_amount']* $details['quantity']) }}</b>
                                             @endif
 
                                         </td>
 
                                         <td>
+
                                             @can('hariri-mkokoteni')
+
                                             <button class="btn btn-sm btn-primary" data-toggle="modal"
                                                 data-target="#modal-md3{{ $details['id'] }}">
-                                                <span class="fa fa-edit"></span>Hariri</button>
+                                                <span class="fa fa-edit"></span></button>
 
                                             @endcan
                                             @can('futa-mkokoteni')
                                             <button action="submit" class="btn btn-sm btn-danger" data-toggle="modal"
                                                 data-target="#modal-danger{{ $details['id'] }}"><span
-                                                    class="fa fa-trash"></span>Futa</button>
+                                                    class="fa fa-trash"></span></button>
                                             @endcan
-
-
                                         </td>
 
                                         <!-- modal -->
@@ -223,9 +236,8 @@
                                         <div class="modal fade" id="modal-md3{{ $details['id'] }}">
                                             <div class="modal-dialog modal-md">
                                                 <div class="modal-content">
-                                                    <div class="modal-header bg-primary">
-                                                        <h4 class="modal-title"><span class="fas fa-edit"></span> Hariri
-                                                            Mkokoteni</h4>
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Hariri Mkokoteni</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -241,8 +253,6 @@
                                                                     <label>Jumla</label>
                                                                 </div>
                                                                 <div class="col col-md-8">
-
-
                                                                     <input type="hidden" name="id"
                                                                         value="{{$details['id']}}">
                                                                     <input type="text" name="amount"
@@ -271,14 +281,14 @@
                                                                 <div class="col col-md-8">
                                                                     <input type="number" min="0" step="0.25"
                                                                         name="sub_quantity" class="form-control"
-                                                                        value="{{ $details['sub_quantity'] }}" required>
+                                                                        value="{{ $details['quantity'] }}" required>
                                                                 </div>
                                                             </div>
                                                             @endif
                                                             </p>
                                                     </div>
                                                     <div class="modal-footer justify-content-between">
-                                                        <button type="button" class="btn btn-danger"
+                                                        <button type="button" class="btn btn-default"
                                                             data-dismiss="modal">Funga</button>
                                                         <button type="submit" class="btn btn-primary">Hariri</button>
                                                     </div>
@@ -294,12 +304,10 @@
                                     @endforeach
                                 </tbody>
                                 <tr>
-                                    <th colspan="5">Jumla</th>
-                                    <th colspan="2">
-                                        <i>{{ $totals }} </i>
-
-
-                                    </th>
+                                    <td colspan="5" align="right"><b>Jumla</b></td>
+                                    <td colspan="2">
+                                        <b>{{ number_format($total,2) }}</b>
+                                    </td>
                                 </tr>
                             </table> <br>
                             @can('fanya-mauzo')
@@ -325,7 +333,6 @@
         </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
-
     <form action="checkout" method="POST">
         @csrf
         <div class="modal fade" id="modal-md">
@@ -338,7 +345,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>
+
                         <div class="row">
                             <div class="col col-md-4">
                                 <label>Mteja</label>
@@ -347,8 +354,9 @@
                                 <input type="text" class="form-control" name="customer_name"
                                     placeholder="Jina la mteja">
                             </div>
-                        </div>
-                        <!-- <div class="row">
+                        </div><br>
+                        <!--
+                        <div class="row">
 
                             <div class="col col-md-4">
                                 <label>Anuani</label>
@@ -356,8 +364,8 @@
                             <div class="col col-md-8">
                                 <input type="text" class="form-control" name="address" placeholder="Anuani">
                             </div>
-                        </div> -->
-                        <br>
+                        </div>
+                        <br> -->
                         <div class="row">
                             <div class="col col-md-4">
                                 <label>Namba ya simu</label>
@@ -367,8 +375,7 @@
                             </div>
                         </div>
                         <br>
-                        <!-- 
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col col-md-4">
                                 <label>TIN</label>
                             </div>
@@ -393,8 +400,9 @@
 
                                 @foreach(session('cart') as $id => $details )
                                 <input type="hidden" name="product[]" value="{{ $details['id'] }}">
-                                <input type="hidden" name="sub_quantity[]" value="{{ $details['sub_quantity'] }}">
+
                                 <input type="hidden" name="quantity[]" value="{{ $details['quantity'] }}">
+                                <input type="hidden" name="pprofit[]" value="{{ $details['pprofit'] }}">
                                 <input type="hidden" name="amount[]" value="{{ $details['net_amount'] }}">
                                 @endforeach
                                 <input type="text" name="total_amount" class="form-control" value=" {{ $total }}"
@@ -408,7 +416,7 @@
                             </div>
                             <div class="col col-md-8">
                                 <input type="number" min="0" name="total_quantity" class="form-control"
-                                    value="{{ $sub_quantity }}" >
+                                    value="{{ $quantity }}" readonly>
                             </div>
                         </div><br>
                         <div class="row">
@@ -428,6 +436,19 @@
                             </div>
                             <div class="col col-md-8">
                                 <input type="number" min="0" value="0" name="vat" class="form-control">
+                            </div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col col-md-4">
+                                <label>Malipo</label>
+                            </div>
+                            <div class="col col-md-8">
+                                <select name="status" id="" class="form-control">
+                                    <option value="">...</option>
+                                    <option value="IMEUZWA">cash</option>
+                                    <option value="MKOPO">mkopo</option>
+                                </select>
+
                             </div>
                         </div>
                         </p>
@@ -458,7 +479,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>
+                        <!-- <p>
                         <div class="row">
                             <div class="col col-md-4">
                                 <label>Mteja</label>
@@ -468,7 +489,7 @@
                                     placeholder="Jina la mteja">
                             </div>
                         </div><br>
-                        <!-- <div class="row">
+                        <div class="row">
 
                             <div class="col col-md-4">
                                 <label>Anuani</label>
@@ -487,8 +508,7 @@
                             </div>
                         </div>
                         <br>
-                        <!-- 
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col col-md-4">
                                 <label>TIN</label>
                             </div>
@@ -513,10 +533,12 @@
 
                                 @foreach(session('cart') as $id => $details )
                                 <input type="hidden" name="product[]" value="{{ $details['id'] }}">
-                                <input type="hidden" name="sub_quantity[]" value="{{ $details['sub_quantity'] }}">
+
                                 <input type="hidden" name="quantity[]" value="{{ $details['quantity'] }}">
+                                <input type="hidden" name="pprofit[]" value="{{ $details['pprofit'] }}">
                                 <input type="hidden" name="amount[]" value="{{ $details['net_amount'] }}">
                                 @endforeach
+
                                 <input type="text" name="total_amount" class="form-control" value=" {{ $total }}"
                                     readonly>
 
@@ -549,12 +571,13 @@
                                 <input type="number" min="0" value="0" name="vat" class="form-control">
                             </div>
                         </div>
+                        <input type="hidden" value="HAIJAUZWA" name="status">
                         </p>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
 
-                        <button type="submit" name="sell" class="btn btn-primary">Order</button>
+                        <button type="submit" name="sell" class="btn btn-primary">Uza</button>
                     </div>
 
                 </div>
