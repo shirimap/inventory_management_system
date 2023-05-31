@@ -5,19 +5,22 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\User;
-use App\Models\Matumizi;
+use App\Models\Expense;
 use App\Models\Sbidhaa;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Sell;
 use App\Models\ShopInfo;
+use RealRashid\SweetAlert\Facades\Alert;
 use Hash;
 use Auth;
+use Dompdf\Dompdf;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use DB;
-
+use Illuminate\Support\Facades\Mail;
+use Swift_Attachment;
 use ZanySoft\LaravelPDF\PDF;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Session;
@@ -182,7 +185,8 @@ class FrontEndController extends Controller
 // function for matumizi
     public function matumizi()
     {
-        return view('layouts.matumizi');
+        $expenses=Expense::get();
+        return view('layouts.matumizi',compact('expenses'));
     }
     //The function for the matawi
     public function matawi(Request $request){
@@ -304,7 +308,8 @@ class FrontEndController extends Controller
         return view('layouts.jukumu',compact('permission','role'));
     }
 
-    public function exportPDF(Request $request){
+    public function exportPDF(Request $request)
+    {
         $fromDate = $request->input('fromDate');
 
         $toDate   = $request->input('toDate');
@@ -328,14 +333,79 @@ class FrontEndController extends Controller
             return $pdf->stream('reportPrint.pdf');
 
         }
-}
+   }
 
-// public function report(){
 
-//     $users = User::all();
+   public function generatePDF(Request $request)
+   {
+        // Validate the input
+        // $request->validate([
+        //     'from_date' => 'required|date',
+        //     'to_date' => 'required|date|after_or_equal:from_date',
+        //     'email' => 'required|email',
+        // ]);
 
-//     return view('layouts.report',compact('users'));
-// }
+    
+       $fromDate = $request->input('fromDate');
+       $toDate   = $request->input('toDate');
+       $emailTo   = $request->input('email');
+   
+       // $data = YourModel::whereBetween('date_column', [Carbon::parse($fromDate)->startOfDay(), Carbon::parse($toDate)->endOfDay()])->get();
+   
+       $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
+               ->groupBy('product_id')         
+                   ->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+
+        $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->where('status','IMEUZWA')->sum('total_amount');
+
+        $sikup = Sell::join('products', 'products.id', '=', 'sells.product_id')        
+        ->where('sells.status', 'IMEUZWA')
+        ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23::59:59"])              
+        ->sum(\DB::raw('sells.profit * sells.quantity'));
+
+       // Generate PDF using Dompdf
+       $dompdf  = new Dompdf ();
+       $html = View('pdf.reportpdf', compact('query','fromDate', 'toDate','pius','sikup'))->render();
+       $dompdf->loadHtml($html);
+      
+   
+       // Set paper size and orientation
+       $dompdf->setPaper('A4', 'portrait');
+   
+       // Render the PDF
+       $dompdf ->render();
+
+       // Get the PDF content
+       $pdfContent = $dompdf->output();
+
+       if ($emailTo) {
+        // Send the PDF as an email attachment
+        $emailSubject = 'Sales Report';
+        $emailBody = 'Please find attached the sales report for the specified product.';
+        $attachmentFilename = 'sales_report.pdf';
+
+        $attachment = new Swift_Attachment($pdfContent, $attachmentFilename, 'application/pdf');
+
+        Mail::send([], [], function ($message) use ($emailTo, $emailSubject, $emailBody, $attachment) {
+            $message->to($emailTo)
+                ->subject($emailSubject)
+                ->setBody($emailBody)
+                ->attach($attachment);
+        });
+        Alert::success('success', 'Sales report PDF has been sent to ' . $emailTo);
+        return redirect()->back();
+    } 
+    else {
+        // Download the PDF
+        $dompdf->stream('sales_report.pdf');
+
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="sales_report.pdf"');
+    }
+   }
+
+
 public function reportPrint(Request $request){
     $fromDate = $request->input('fromDate');
         $toDate   = $request->input('toDate');

@@ -1,38 +1,25 @@
 @include('includes/header')
 @include('includes/nav')
-
+@section('bidhaa', 'active')
+@include('sweetalert::alert')
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 
     <!-- Content Header (Page header) -->
     <div class="content-header">
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-
-            <p color="white">{{ session()->get('error') }}
-        </div>
-        @endif
-        @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-
-            <p color="white">{{ session()->get('message') }}
-        </div>
-        @endif
         <div class="container-fluid">
             <div class="row mb-2">
+                <!-- alert -->
+
+                <!-- /alert -->
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><span class="fa fa-map-marker"></span> Matumizi</h1>
-
-
+                    <h1 class="m-0 text-dark"><i class="nav-icon fa fa-th"></i> Expenses</h1>
                 </div><!-- /.col -->
-
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Nyumbani</a></li>
-                        <li class="breadcrumb-item active">matumizi</li>
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Expenses Product</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -40,78 +27,211 @@
     </div>
     <!-- /.content-header -->
 
-    <section class="content pb-3">
-        <div class="container-fluid h-100">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Matumizi</h3>
+    <!-- Main content -->
+    <section class="content">
 
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
+        <div class="container-fluid">
+            <!-- Small boxes (Stat box) -->
+            <!-- Display filter options -->
+            <form method="GET" action="{{ route('expenses.filter') }}" class="mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="filter">Filter:</label>
+                            <select name="filter" id="filter" class="form-control">
+                                <option value="">All</option>
+                                <option value="daily">Daily</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="custom">Custom</option>
+                            </select>
                         </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="inputDescription">Matumizi Maelezo</label>
-                                <textarea id="inputDescription" class="form-control" rows="4"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputClientCompany">Jumla Matumizi</label>
-                                <input type="text" id="inputClientCompany" class="form-control">
-                            </div>
-                            <hr>
-
-                            <button type="submit" value="submit" class="btn btn-primary pull-right">Ongeza</buttton>
-
-                        </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card -->
+                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="start_date">Start Date:</label>
+                            <input type="date" name="start_date" id="start_date_container" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" >
+                            <label for="end_date">End Date:</label>
+                            <input type="date" name="end_date" id="end_date_container" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="filter"><br></label>
+                            <button type="submit" class="btn btn-primary form-control">Filter</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card card-secondary">
-                        <div class="card-header">
-                            <h3 class="card-title">Budget</h3>
+            </form>
+        </div>
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title"><i class="nav-icon fa fa-th"></i> Expenses</h3>
+                @can('ongeza-bidhaa')
+                <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#modal-lg1">
+                    <span class="fa fa-plus"></span> Add Expense</button>
+                @endcan
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Description</th>
+                            <th>Total Amount </th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($expenses as $expense)
+                        <tr>
+                            <td>{{$loop->iteration}}</td>
+                            <td>{{ $expense->description }}</td>
+                            <td>{{ $expense->amount }}</td>
+                            <td>{{ $expense->created_at }}</td>
+                            <td>
 
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
+                                <a type="button" class="btn btn-sm btn-primary" style="color:white;" data-toggle="modal"
+                                    data-target="#modal-secondaryy{{ $expense->id }}"><i class="fas fa-edit"></i></a>
+
+                                <a type="button" class="btn btn-sm btn-danger" style="color:white;" data-toggle="modal"
+                                    data-target="#modal-danger{{ $expense->id }}"><i class="fa fa-trash"></i></a>
+
+                            </td>
+
+                        </tr>
+                        <div class="modal fade" id="modal-danger{{ $expense->id }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content bg-danger">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Futa Bidhaa</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" action="matumizi/delete/{{ $expense->id }}">
+                                            {{ csrf_field() }}
+
+                                            <input type="hidden" name="id" value="{{ $expense->id }}">
+                                            <p>
+                                                </b></p>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-outline-light"
+                                            data-dismiss="modal">Funga</button>
+                                        <button type="submit" name="remove" class="btn btn-outline-light">Futa</button>
+
+                                    </div>
+                                    </form>
+
+
+                                </div>
+                                <!-- /.modal-content -->
                             </div>
+                            <!-- /.modal-dialog -->
                         </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="inputEstimatedBudget">Estimated budget</label>
-                                <input type="number" id="inputEstimatedBudget" class="form-control">
+
+                        <div class="modal fade" id="modal-secondaryy{{ $expense->id }}">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary">
+                                        <h4 class="modal-title"><span class="fa fa-edit"></span>Edit Epenses</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" action="matumizi/edit/{{ $expense->id }}">
+                                            {{ csrf_field() }}
+
+                                            <input type="hidden" name="proid" value="{{ $expense->id }}">
+                                            <div class="row">
+                                                <div class="col col-md-12">
+                                                    <label>Description</label>
+                                                    <textarea id="description" name="description" rows="4"
+                                                        cols="104">{{ $expense->description }}</textarea>
+                                                </div>
+
+                                                <div class="col col-md-12">
+                                                    <label>Amount</label>
+                                                    <input type="number" name="amount" class="form-control"
+                                                        value="{{ $expense-> amount}}">
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">Cancel</button>
+                                        <button type="submit" name="remove" class="btn btn-primary">Update</button>
+
+                                    </div>
+                                    </form>
+
+
+                                </div>
+                                <!-- /.modal-content -->
                             </div>
-                            <div class="form-group">
-                                <label for="inputSpentBudget">Total amount spent</label>
-                                <input type="number" id="inputSpentBudget" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="inputEstimatedDuration">Estimated project duration</label>
-                                <input type="number" id="inputEstimatedDuration" class="form-control">
-                            </div>
+                            <!-- /.modal-dialog -->
                         </div>
-                        <!-- /.card-body -->
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+
+
+        <!-- /.row -->
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+<form method="post" action="matumizi/create">
+    @csrf
+    <div class="modal fade" id="modal-lg1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h4 class="modal-title"><span class="fa fa-plus"></span> Register New Product</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    <div class="row">
+                        <div class="col col-md-12">
+                            <label>Description</label>
+                            <textarea id="description" name="description" rows="4" cols="104"></textarea>
+                        </div>
+
+                        <div class="col col-md-12">
+                            <label>Amount</label>
+                            <input type="number" name="amount" class="form-control" placeholder="Weka kiasi..."
+                                required>
+                        </div>
                     </div>
-                    <!-- /.card -->
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button name="addproduct" class="btn btn-primary">Save</button>
                 </div>
             </div>
-            <!-- /.col -->
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</form>
 
 
-    </section>
-
-
-</div>
-<!-- /.row -->
-
-<!-- /.row -->
-</div>
-<!-- /.content-wrapper -->
 @include('includes/footer')

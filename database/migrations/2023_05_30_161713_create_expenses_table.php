@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableMatumizi extends Migration
+class CreateExpensesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTableMatumizi extends Migration
      */
     public function up()
     {
-        Schema::create('table_matumizi', function (Blueprint $table) {
+        Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->string('description');
             $table->string('amount');
@@ -28,6 +28,6 @@ class CreateTableMatumizi extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_matumizi');
+        Schema::dropIfExists('expenses');
     }
 }

@@ -61,7 +61,7 @@ Route::get('getMatumizi/{id}', [ApiController::class,'getMatumizi']);
 Route::post('editMatumizi/{id}', [ApiController::class,'editMatumizi']);
 Route::post('deleteMatumizi/{id}', [ApiController::class,'deleteMatumizi']);
 
-//Sjaili bidhaa
+//Sjaili bidhaa.
 
 Route::post('createsbidhaa', [ApiController::class,'createMatumizi']);
 Route::get('showbidhaa', [ApiController::class,'showbidhaa']);

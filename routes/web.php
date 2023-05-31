@@ -123,13 +123,9 @@ Route::group(['middleware' => 'auth'],function(){
     Route::get('report',[FrontEndController::class,'report'])->name('report');
     Route::get('reportPrint',[FrontEndController::class,'reportPrint'])->name('reportPrint');
     Route::post('exportPDF',[FrontEndController::class,'exportPDF'])->name('exportPDF');
-
-    // graph
-    // Route::get('dashboard', [FrontEndController::class, 'salesChart'])->name('dashboard');
-
-
-
-    Route::get('emails/out_of_stock',[FrontEndController::class,'build'])->name('build');
+    Route::get('generatePDF',[FrontEndController::class,'generatePDF'])->name('generatePDF');
+ 
+ 
 
 
     Route::get('logout',[BackendController::class,'logout'])->name('logout');
@@ -189,7 +185,11 @@ Route::get('order',[FrontEndController::class, 'order'])->name('order');
 Route::get('/sajilibidhaa', [BackendController::class,'sendSms'])->name('sendSms');
 
 
-
+// =====expenses route=============
+Route::post('matumizi/create',[BackendController::class,'createMatumizi']);
+Route::post('matumizi/delete/{id}',[BackendController::class,'deletematumizi']);
+Route::post('matumizi/edit/{id}',[BackendController::class,'editMatumizi']);
+Route::get('/expenses/filter', [BackendController::class, 'filter'])->name('expenses.filter');
 });
 
 

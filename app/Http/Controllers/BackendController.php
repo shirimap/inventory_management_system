@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\Branch;
 use App\Models\User;
-// use App\Models\Matumizi;
+
 use App\Models\Sbidhaa;
+use App\Models\Expense;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Sell;
@@ -293,32 +294,29 @@ class BackendController extends Controller
     }
 
 
-public function report(Request $request)
+    public function report(Request $request)
     {
-        $bidhaa=Sbidhaa::get();
+        $product=Product::with('sbidhaa')->get();
         $fromDate = $request->input('fromDate');
         $toDate   = $request->input('toDate');
-        $other    = $request->input('other');
+        // $other    = $request->input('other');
         $role = Role::all();
         if(count($request->all()) > 0){
             $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
-            ->groupBy('product_id')->whereHas('product', function ($query) use ($other) {
-                $query->where('sbidhaa_id', 'like', '%' . $other . '%');
-            })
-            
-                ->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59",$other))->get();
+            ->groupBy('product_id')            
+                ->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
             $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->where('status','IMEUZWA')->sum('total_amount');
-          
-            
+        
                     $sikup = Sell::join('products', 'products.id', '=', 'sells.product_id')
+                   
                     ->where('sells.status', 'IMEUZWA')
-                    ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23::59:59"])
+                    ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23::59:59"])              
                     ->sum(\DB::raw('sells.profit * sells.quantity'));
             
-            return view('layouts.report',compact('query','role','pius','sikup','bidhaa'));
+            return view('layouts.report',compact('query','role','pius','sikup','product'));
         }
         else{
-            $bidhaa=Sbidhaa::get();
+            $product=Product::with('sbidhaa')->get();
             $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
                     ->groupBy('product_id')->get();
             //$sikup=sell::with('product')->select('pprofit')->get();
@@ -326,12 +324,12 @@ public function report(Request $request)
             $sikup=Sell::join('products', 'products.id', '=', 'sells.product_id')
                     ->where('sells.status','IMEUZWA')
                     ->sum(\DB::raw('sells.profit * sells.quantity'));
-            return view('layouts.report',compact('query','role','pius','sikup','bidhaa'));
+            return view('layouts.report',compact('query','role','pius','sikup','product'));
         }
     }
 
 
-    
+ 
 
 public function delete($id)
     {
@@ -709,7 +707,7 @@ public function updateCart(Request $request)
             $product->save();
             
         }
-        $this->sendSMS();
+        // $this->sendSMS();
      }
 
      foreach($mi as list($p,$q,$t,$a)){
@@ -1120,45 +1118,7 @@ public function updateShop(Request $request,$id){
         
      }
 
-    //  sendsm function when product is out of stock
-     private function sendSMS()
-     {        
-        $client = new Client();
-        $apiUrl = 'http://smsportal.imartgroup.co.tz/app/smsapi/index.php';
-        $apiKey = '36281862404933';
-        $routeId = 8;
-        $senderId = 'Spring-Tech';
 
-        $products = Product::all();
-
-        foreach ($products as $product) {
-            $sbidhaa = Sbidhaa::find($product->sbidhaa_id);
-
-            // Check if the current quantity is below or equal to the threshold
-            if ($product->quantity <= $sbidhaa->threshold) {
-                $phone_number = 756007671; // Replace with the recipient's phone number
-
-                $sms = 'The product ' . $sbidhaa->name . ' is out of stock!';
-
-                $params = [
-                    'campaign' => 266,
-                    'routeid' => $routeId,
-                    'key' => $apiKey,
-                    'type' => 'text',
-                    'contacts' => $phone_number,
-                    'senderid' => $senderId,
-                    'msg' => $sms,
-                ];
-
-                $client->request('GET', $apiUrl, ['query' => $params]);
-
-                // You can add additional error handling or logging here
-            }
-        }
-
-        $this->info('Stock notifications sent successfully!');
-     }
-     
      public function deletesbidhaa($id){
 
         $product = sbidhaa::where('id',$id)->delete();
@@ -1204,34 +1164,103 @@ public function updateShop(Request $request,$id){
   return back();
 
   }
-  public function exportPDF(Request $request){
-        
-    $fromDate = $request->input('fromDate');
-    $toDate   = $request->input('toDate');
-    $other    = $request->input('other');
-    $role = Role::all();
-    if(count($request->all()) > 0){
-        $pdf = new PDF();
-        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'))->groupBy('product_id','created_at')->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-        $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('total_amount');
-        
 
-        // $ =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('quntity');
-        $pdf->loadView('layouts.reportPrint',compact('query','role','pius'));
-        return $pdf->stream('mauzo.pdf');
-    }
-    else{
-        
-        
-        $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'))->groupBy('product_id')->get();
-        $pius =Sell::sum('total_amount');
-        
-        $pdf = new PDF();
-        $pdf->loadView('layouts.reportPrint',compact('query','role','pius'));
-        return $pdf->stream('reportPrint.pdf');
-    }
+
+
+
+
+
+//==============Expenses Function====================
+
+public function createMatumizi(Request $request){
+
+    $date = Carbon::now();
+     $validate = Validator::make($request->all(),[
+         'description'=>'required',
+         'amount'=>'required',   
+      
+
+     ]);
+
+      if ($validate->fails()){
+         $messages = $validate->messages();
+         Alert::error('errors','Kuna Kosa wakati wa uwekaji Taarifa');
+         return back();
+      }
+
+
+     $expenses = Expense::create([
+         'description'=> $request->description,
+         'amount'=>$request->amount,
+         'created_at'=> $date,
+     ]);      
+               
+     
+     Alert::success('message','Taarifa zimeingia kikamilifu');
+     return back();
+    
+ }
+ public function editMatumizi(Request $request,$id){
+
+    $date = Carbon::now();
+
+    $validate = Validator::make($request->all(),[
+      'description'=>'required',
+      'amount'=>'required',
+      
+  ]);
+
+  if ($validate->fails()){
+    $messages = $validate->messages();
+    return back()->with('error',$messages);
+ }
+
+  $data = Expense::where('id',$id)->update(
+      [
+      'description'=> $request->description,
+      'amount'=>$request->amount,
+        'updated_at'=>$date
+  ]
+    );
+   
+    Alert::success('message','Taarifa zimebadilika kikamilifu');
+    return back();
+
 }
 
+    public function deleteMatumizi($id){
 
+        $expenses = Expense::where('id',$id)->delete();
+
+        if ($expenses){
+            Alert::success('message','Expense imefutwa kikamilifu');
+            return back();
+           
+
+        }
+        Alert::error('error','Kuna Kosa wakati wa ufutaji wa Bidhaa');
+        return back();
+     
+    }
+
+    public function filter(Request $request)
+    {
+        $filter = $request->input('filter');
+        $expenses = Expense::query();
+
+        if ($filter === 'daily') {
+            $expenses = $expenses->whereDate('created_at', today());
+        } elseif ($filter === 'monthly') {
+            $expenses = $expenses->whereMonth('created_at', today()->format('m'));
+        } elseif ($filter === 'custom') {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+           $expenses = $expenses->whereBetween('created_at', [$startDate, $endDate . ' 23:59:59']);
+            
+        }
+
+        $expenses = $expenses->latest()->paginate(10);
+        return view('layouts.matumizi', compact('expenses'));
+    }
 
 }
