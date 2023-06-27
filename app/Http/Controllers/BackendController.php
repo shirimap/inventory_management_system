@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\Branch;
 use App\Models\User;
-
+use App\Models\Payment;
 use App\Models\Sbidhaa;
 use App\Models\Expense;
 use App\Models\Product;
+use App\Models\Debt;
 use App\Models\Order;
 use App\Models\Sell;
 use App\Models\ShopInfo;
@@ -279,57 +280,31 @@ class BackendController extends Controller
     }
     public function search(Request $request)
     {
+        $pd=Product::with('sbidhaa')->get();
+        // $fromDate = $request->input('fromDate');
+        // $toDate   = $request->input('toDate');
+        //$other    = $request->input('other'); 
+
         $fromDate = $request->input('fromDate');
-
-
-        $toDate   = $request->input('toDate');
-
-        $other    = $request->input('other');
-
-        $query = Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-
-
+        $toDate = $request->input('toDate');
+        $productId = $request->input('productId');
+    
+        $query = DB::table('sells')
+            ->select('product_id', 'quantity', 'created_at', 'amount');
+    
+        // Apply date range filter
+        if ($fromDate && $toDate) {
+            $query = Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
+        }
+    
+        // Apply product ID filter
+        if ($productId) {
+            $query->where('product_id', $productId);
+        }
         $role = Role::all();
-        return view('report.report',compact('query','role'));
+        return view('layouts.report',compact('query','role','pd'));
     }
 
-
-    public function report(Request $request)
-    {
-        $product=Product::with('sbidhaa')->get();
-        $fromDate = $request->input('fromDate');
-        $toDate   = $request->input('toDate');
-        // $other    = $request->input('other');
-        $role = Role::all();
-        if(count($request->all()) > 0){
-            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
-            ->groupBy('product_id')            
-                ->whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->get();
-            $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->where('status','IMEUZWA')->sum('total_amount');
-        
-                    $sikup = Sell::join('products', 'products.id', '=', 'sells.product_id')
-                   
-                    ->where('sells.status', 'IMEUZWA')
-                    ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23::59:59"])              
-                    ->sum(\DB::raw('sells.profit * sells.quantity'));
-            
-            return view('layouts.report',compact('query','role','pius','sikup','product'));
-        }
-        else{
-            $product=Product::with('sbidhaa')->get();
-            $query = Sell::with('product')->select('product_id',DB::raw('sum(quantity) as quantity'),DB::raw('sum(total_amount) as amount'),DB::raw('sum(profit) as profit'))
-                    ->groupBy('product_id')->get();
-            //$sikup=sell::with('product')->select('pprofit')->get();
-            $pius =Sell::where('status','IMEUZWA')->sum('total_amount');
-            $sikup=Sell::join('products', 'products.id', '=', 'sells.product_id')
-                    ->where('sells.status','IMEUZWA')
-                    ->sum(\DB::raw('sells.profit * sells.quantity'));
-            return view('layouts.report',compact('query','role','pius','sikup','product'));
-        }
-    }
-
-
- 
 
 public function delete($id)
     {
@@ -354,7 +329,145 @@ public function delete($id)
         return redirect()->back();
      
     }
+  //The function for the sale_report
+  public function report(Request $request){   
+    $sell=Sell::get();
+    $pd=Product::with('sbidhaa')->get();
+    
+    $fromDate = $request->input('fromDate');
+    $toDate   = $request->input('toDate');
+    $p = $request->input('product_id');
+    $role = Role::all();
+  
+        // $data=Sell::with('product')
+        // ->join('products', 'sells.product_id', '=', 'products.id')
+        // ->select('sells.product_id', DB::raw('SUM(sells.quantity) as quantity'), DB::raw('SUM(sells.total_amount * sells.quantity) as amount'), DB::raw('SUM(sells.profit) as profit'))
+        // ->where('sells.status', 'IMEUZWA')
+        // ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23:59:59"])
+        // ->groupBy('sells.product_id')
+        // ->get();
 
+
+    // if ($request->filled($p) && !$request->filled('fromDate') && !$request->filled('toDate')) {            
+    //    $data->where('sells.product_id', $p);
+    //    $b=Payment::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        
+    //    $pius = Sell::with('product')
+    //     ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+    //     ->where('status', 'IMEUZWA')
+    //     ->where('product_id', $p)
+    //     ->sum(\DB::raw('total_amount * quantity'));
+    //     // $a = $result->amount;
+    //     // $pius=$a+$b;
+    //     $sikup = Sell::with('product')
+    //    ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+    //    ->where('status', 'IMEUZWA')
+    //    ->where('product_id', $p)
+    //    ->sum('profit');
+
+        
+    //     return view('layouts.report',compact('data','pius','sikup','pd'));
+        
+    // }
+    // elseif (empty($p) && $request->filled('fromDate') && $request->filled('toDate')) {
+    //     // No product ID, but date range selected, retrieve data within the date range
+    //     $data->whereNotNull('id'); 
+        
+    //     //$data->where('sells.product_id', $p);
+    //     $b=Payment::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        
+    //     $pius = Sell::with('product')
+    //     ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+    //     ->where('status', 'IMEUZWA')
+    //     ->where('product_id', $p)
+    //     ->sum(\DB::raw('total_amount * quantity'));
+    //     // $a = $result->amount;
+    //     // $pius=$a+$b;
+    //     $sikup = Sell::with('product')
+    //    ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+    //    ->where('status', 'IMEUZWA')
+    //    ->where('product_id', $p)
+    //    ->sum('profit');
+
+       
+    //     return view('layouts.report',compact('data','pius','sikup','pd'));
+    // } 
+    // else{
+    //     $data=Sell::with('product')
+    //     ->join('products', 'sells.product_id', '=', 'products.id')
+    //     ->select('sells.product_id', DB::raw('SUM(sells.quantity) as quantity'), DB::raw('SUM(sells.total_amount * sells.quantity) as amount'), DB::raw('SUM(sells.profit) as profit'))
+    //     ->where('sells.status', 'IMEUZWA')
+    //     ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23:59:59"])
+    //     ->groupBy('sells.product_id')
+    //     ->get();
+    //     $b=Payment::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        
+    //     $pius = Sell::with('product')
+    //     ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+    //     ->where('status', 'IMEUZWA')
+    //     ->where('product_id', $p)
+    //     ->sum(\DB::raw('total_amount * quantity'));
+    //      // $a = $result->amount;
+    //      // $pius=$a+$b;
+
+    //      $sikup = Sell::where('product_id',$p)      
+    //      ->where('sells.status', 'IMEUZWA')
+    //      ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23::59:59"])              
+    //      ->sum('profit');
+    //      return view('layouts.report',compact('data','pius','sikup','pd'));
+    // }      
+    if(count($request->all()) > 0){
+        $data=Sell::with('product')
+        ->join('products', 'sells.product_id', '=', 'products.id')
+        ->select('sells.product_id', DB::raw('SUM(sells.quantity) as quantity'), DB::raw('SUM(sells.total_amount * sells.quantity) as amount'), DB::raw('SUM(sells.profit) as profit'))
+        ->where('sells.status', 'IMEUZWA')
+        ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23:59:59"])
+        ->groupBy('sells.product_id')
+        ->get();
+
+        $b=Payment::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        
+        $pius = Sell::with('product')
+        ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+        ->where('status', 'IMEUZWA')
+        ->where('product_id', $p)
+        ->sum(\DB::raw('total_amount * quantity'));
+        // $a = $result->amount;
+        // $pius=$a+$b;
+        $sikup = Sell::with('product')
+       ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+       ->where('status', 'IMEUZWA')
+       ->where('product_id', $p)
+       ->sum('profit');
+
+       return view('layouts.report',compact('data','pius','sikup','pd'));
+    }
+    else{
+        $data=Sell::with('product')
+        ->join('products', 'sells.product_id', '=', 'products.id')
+        ->select('sells.product_id', DB::raw('SUM(sells.quantity) as quantity'), DB::raw('SUM(sells.total_amount * sells.quantity) as amount'), DB::raw('SUM(sells.profit) as profit'))
+        ->where('sells.status', 'IMEUZWA')
+        ->whereBetween('sells.created_at', [$fromDate." 00:00:00", $toDate." 23:59:59"])
+        ->groupBy('sells.product_id')
+        ->get();
+        $b=Payment::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->sum('amount');
+        
+        $pius = Sell::with('product')
+        ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+        ->where('status', 'IMEUZWA')
+        ->where('product_id', $p)
+        ->sum(\DB::raw('total_amount * quantity'));
+        // $a = $result->amount;
+        // $pius=$a+$b;
+        $sikup = Sell::with('product')
+       ->whereBetween('created_at', [$fromDate . " 00:00:00", $toDate . " 23:59:59"])
+       ->where('status', 'IMEUZWA')
+       ->where('product_id', $p)
+       ->sum('profit');
+       return view('layouts.report',compact('data','pius','sikup','pd'));
+    }
+    
+}
     
 // ===============product_functions===================
 public function createProduct(Request $request){
@@ -642,7 +755,7 @@ public function updateCart(Request $request)
  }
 
 
- ////////////////////////////////////////////////////////pius
+ ///////hesabu=====================
  public function checkout(Request $request){
 
     $date = Carbon::now();
@@ -663,6 +776,7 @@ public function updateCart(Request $request)
     $na = ($request->total_amount - $request->discount);
     $nA =  $na*(($request->vat)/100);
     $nA = $nA+$na;
+    $osd=$request->status;
      $order = new Order;
      $order->user_id = Auth::user()->id;
      $order->customer_name = $request->customer_name;
@@ -672,7 +786,7 @@ public function updateCart(Request $request)
      $order->phonenumber = $request->phonenumber;
      $order->discount = $request->discount;
      $order->total_quantity = $request->total_quantity;
-     $order->status = $request->status;
+     $order->status = $osd;
      $order->vat = $request->vat;
      $order->org_amount = $na;
      $order->total_amount = $nA;
@@ -709,41 +823,51 @@ public function updateCart(Request $request)
         }
         // $this->sendSMS();
      }
-
-     foreach($mi as list($p,$q,$t,$a)){
-        $product = Product::find($p);
-        $sells = new Sell;
-        $sells->customer_name = $request->customer_name;
-        $sells->address = $request->address;
-        $sells->TIN = $request->TIN;
-        $sells->VRN = $request->VRN;
-        
-        $sells->phonenumber = $request->phonenumber;
-        $sells->order_id = $order->id;
-        $sells->status =$request->status;
-        $sells -> product_id = $p;
-        if($product->category_id == 2){
-        $sells->profit=$t*$q;
-        $sells -> quantity = $q;
-        $sells -> total_amount = $a*$q;
-        // $sells->net_amount=$a*$q;
-        $sells->save();
-        }
-        else{
+     $order->status = $request->status;
+     if($osd == "MKOPO"){           
+            $debt = new Debt;       
+            $debt->order_id = $order->id;
+            // $debt -> quantity = $q;                       
+            $debt -> amount =$na;                 
+            $debt->save();
+     
+     }
+     
+        foreach($mi as list($p,$q,$t,$a)){
+            $product = Product::find($p);
+            $sells = new Sell;
+            $sells->customer_name = $request->customer_name;
+            $sells->address = $request->address;
+            $sells->TIN = $request->TIN;
+            $sells->VRN = $request->VRN;
+            
+            $sells->phonenumber = $request->phonenumber;
+            $sells->order_id = $order->id;
+            $sells->status =$request->status;
+            $sells -> product_id = $p;
+            if($product->category_id == 2){
             $sells->profit=$t*$q;
             $sells -> quantity = $q;
-            $sells -> total_amount = $a*$q;
+            $sells -> total_amount = $a;
             // $sells->net_amount=$a*$q;
             $sells->save();
-        }
-
-}
-   
+            }
+            else{
+                $sells->profit=$t*$q;
+                $sells -> quantity = $q;
+                $sells -> total_amount = $a;
+                // $sells->net_amount=$a*$q;
+                $sells->save();
+            }          
+           
+       }
+        
+        
      $request->session()->forget('cart');
      Alert::success('message','Taarifa zimeingia kikamilifu');
      return back();
 
- }
+  }
 
 
 
@@ -1124,12 +1248,11 @@ public function updateShop(Request $request,$id){
         $product = sbidhaa::where('id',$id)->delete();
 
         if ($product){
-            Alert::success('message','Bidhaa imefutwa kikamilifu');
-            return back();
-           
+            Alert::success("Deleted!", "The record has been deleted.", "success");
+            return back();           
 
         }
-        Alert::error('error','Kuna Kosa wakati wa ufutaji wa Bidhaa');
+        Alert::error("Cancelled", "The record was not deleted.", "info");
         return back();
      
     }
@@ -1262,5 +1385,107 @@ public function createMatumizi(Request $request){
         $expenses = $expenses->latest()->paginate(10);
         return view('layouts.matumizi', compact('expenses'));
     }
+
+    public function s(Request $request,$id){
+
+         $date = Carbon::now();
+    
+    //     $validate = Validator::make($request->all(),[
+    //       'description'=>'required',
+    //       'amount'=>'required',
+          
+    //   ]);
+    
+    //   if ($validate->fails()){
+    //     $messages = $validate->messages();
+    //     return back()->with('error',$messages);
+    //  }
+    
+      $data = Debit::where('id',$id)->update(
+          [
+          'order_id'=> $request->order_id,
+          'amount'=>$request->amount,
+            'updated_at'=>$date
+      ]
+        );
+       
+        Alert::success('message','Taarifa zimebadilika kikamilifu');
+        return back();
+    
+    }
+
+
+    public function payment(Request $request)
+    {
+        $sell=Sell::get();
+        $loan=Debt::with('order')->get();
+        $p = $request->input('order_id');
+        $paidAmount = $request->input('paid_amount');
+    
+        $order = Order::find($p);
+        $order->total_amount -= $paidAmount;
+        $order->save();
+    
+    
+        $debt = Debt::where('order_id', $p)->first();
+    
+        if ($debt) {
+            if ($debt->amount >= $paidAmount) {
+                $debt->amount -= $paidAmount;
+                $debt->save();
+        
+                $payment = new Payment();
+                $payment->order_id = $p;
+                $payment->debt_id = $debt->id;
+                $payment->amount = $paidAmount;               
+                $payment->save();
+            } else {
+                $paidAmount -= $debt->amount;
+                $debt->delete();
+           
+        
+                // $payment = new Payment();
+                // $payment->order_id = $p;
+                // $payment->debt_id = $debt->id;
+                // $payment->amount = $debt->amount;                
+                // $payment->save();
+        
+                // $payment = new Payment();
+                // $payment->order_id = $p;
+                // $payment->debt_id = null;
+                // $payment->amount = $paidAmount;               
+                // $payment->save();
+              
+            }
+        }
+       
+       
+        if ($order->total_amount == 0) {
+            // Update the status in the order table
+            $order->status = 'IMEUZWA';
+            $order->save();
+        
+            // Update the status in the sells table
+            $sell = Sell::where('order_id', $p)->first();
+            $sell->status = 'IMEUZWA';
+            $sell->save();
+        }
+        Alert::success('message','Taarifa zimebadilika kikamilifu');      
+        return view('layouts.madeni',compact('debt','loan'));
+        // Additional logic and response handling
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

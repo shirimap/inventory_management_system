@@ -113,17 +113,13 @@
    
     <table align="right">
         <tr>
-            <td><h1>Total Sales:</h1> <br><h1>Total Profit:</h1></td>
+            <td><h1>Debit Paid:</h1> <br><h1>Total Profit:</h1> <br><h1>Total Sales:</h1></td>
             <td></td>
-            <td><h2>{{number_format($pius,2)}} /=</h2> <br><h2>{{number_format($sikup,2)}} /=</h2></td>            
+            <td><h2>{{number_format($b,2)}} /=</h2> <br><h2>{{number_format($sikup,2)}} /=</h2> <br><h2>{{number_format($pius,2)}} /=</h2></td>            
         </tr>
         
     </table>
-    <footer class="main-footer">    
-    <small>
-   Inventory management system 2023
-    </small>
-  </footer>
+
     
 
     

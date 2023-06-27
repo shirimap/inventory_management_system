@@ -44,7 +44,9 @@
     .d-nones {
         display: none;
     }
-    </style>
+    
+
+        </style>
     
 </head>
 

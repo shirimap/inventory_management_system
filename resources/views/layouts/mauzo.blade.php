@@ -14,12 +14,12 @@
 
                 <!-- /alert -->
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><i class="fas fa-shopping-cart"></i> Fanya Mauzo</h1>
+                    <h1 class="m-0 text-dark"><i class="fas fa-shopping-cart"></i> Point Of Sale</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Nyumbani</a></li>
-                        <li class="breadcrumb-item active">Mauzo</li>
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">pos</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -36,8 +36,8 @@
                 <div class="col-sm-6">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><span class="fas fa-shopping-cart "></span> Chagua ya kuweka kwenye
-                                Mkokoteni
+                            <h3 class="card-title"><span class="fas fa-shopping-cart "></span>Product List
+                                Cart
                             </h3>
 
                         </div>
@@ -47,12 +47,12 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Bidhaa</th>
-                                        <th>Aina</th>
-                                        <th>Idadi</th>
-                                        <th>Bei</th>
-                                        <th>Idadi</th>
-                                        <th>Kitendo</th>
+                                        <th>Product</th>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Sell Price</th>
+                                        <th>Quantity</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -122,8 +122,8 @@
                 <div class="col-sm-6">
                     <div class="card card-dark">
                         <div class="card-header">
-                            <h3 class="card-title"><span class="fas fa-shopping-cart "></span> Ulivoviweka kwenye
-                                Mkokoteni</h3>
+                            <h3 class="card-title"><span class="fas fa-shopping-cart "></span> Choosen To
+                                Cart</h3>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
@@ -131,18 +131,17 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Bidhaa</th>
-                                        <th>Idadi</th>
-                                        <th>Bei</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Sell Price</th>
                                         <!-- <th>Punguzo</th> -->
-                                        <th>Jumla</th>
-                                        <th>Kitendo</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php $total = 0 ?>
                                     <?php $quantity = 0 ?>
-                                    <?php $sub_quantity = 0?>
                                     <?php $pprofit = 0 ?>
                                     <?php $fullName = ucwords(Auth::user()->first_name)." ". ucwords(Auth::user()->last_name) ?>
 
@@ -168,7 +167,7 @@
                                         </td>
                                         <td>
                                             @if($details['category_id'] == 2)
-                                            {{ number_format($details['pprofit']) }}
+                                            {{ number_format($details['net_amount']) }}
                                             @else
                                             {{ number_format($details['net_amount']) }}
                                             @endif
@@ -206,7 +205,7 @@
                                             <div class="modal-dialog">
                                                 <div class="modal-content bg-danger">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title">Ondoa kwenye mkokoteni</h4>
+                                                        <h4 class="modal-title">Delete From Cart</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -216,13 +215,13 @@
                                                         <form method="post" action="deleteCart">
                                                             @csrf
                                                             <input type="hidden" name="id" value="{{ $details['id'] }}">
-                                                            <p>Bidhaa hii itaondolewa kwenye mkokoteni</p>
+                                                            <p>This Product Will Be removed From Cart</p>
                                                     </div>
                                                     <div class="modal-footer justify-content-between">
                                                         <button type="button" class="btn btn-outline-light"
-                                                            data-dismiss="modal">Funga</button>
+                                                            data-dismiss="modal">Cancel</button>
                                                         <button name="remove"
-                                                            class="btn btn-outline-light">Ondoa</button>
+                                                            class="btn btn-outline-light">Save</button>
                                                         </form>
                                                     </div>
 
@@ -237,7 +236,7 @@
                                             <div class="modal-dialog modal-md">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title">Hariri Mkokoteni</h4>
+                                                        <h4 class="modal-title">Edit Cart</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -250,7 +249,7 @@
 
                                                             <div class="row">
                                                                 <div class="col col-md-4">
-                                                                    <label>Jumla</label>
+                                                                    <label>Total</label>
                                                                 </div>
                                                                 <div class="col col-md-8">
                                                                     <input type="hidden" name="id"
@@ -289,8 +288,8 @@
                                                     </div>
                                                     <div class="modal-footer justify-content-between">
                                                         <button type="button" class="btn btn-default"
-                                                            data-dismiss="modal">Funga</button>
-                                                        <button type="submit" class="btn btn-primary">Hariri</button>
+                                                            data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
                                                     </form>
                                                 </div>
@@ -304,7 +303,7 @@
                                     @endforeach
                                 </tbody>
                                 <tr>
-                                    <td colspan="5" align="right"><b>Jumla</b></td>
+                                    <td colspan="5" align="right"><b>Total Amount</b></td>
                                     <td colspan="2">
                                         <b>{{ number_format($total,2) }}</b>
                                     </td>
@@ -313,12 +312,12 @@
                             @can('fanya-mauzo')
 
                             <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#modal-md"><span
-                                    class="fa fa-plus"></span> Fanya Mauzo</button>
+                                    class="fa fa-plus"></span> Add Sell</button>
                             @endcan
                             @can('ongeza-order')
 
                             <button class="btn btn-secondary btn-block" data-toggle="modal"
-                                data-target="#modal-mdd"><span class="fa fa-plus"></span> Order</button>
+                                data-target="#modal-mdd"><span class="fa fa-plus"></span>Add Order</button>
                             @endcan
 
 
@@ -339,111 +338,36 @@
             <div class="modal-dialog modal-md">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Fanya Mauzo</h4>
+                        <h4 class="modal-title">Payment</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Mteja</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="customer_name"
-                                    placeholder="Jina la mteja">
-                            </div>
-                        </div><br>
-                        <!--
-                        <div class="row">
-
-                            <div class="col col-md-4">
-                                <label>Anuani</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="address" placeholder="Anuani">
-                            </div>
-                        </div>
-                        <br> -->
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Namba ya simu</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="phonenumber" placeholder="Namba Ya simu">
-                            </div>
-                        </div>
-                        <br>
-                        <!-- <div class="row">
-                            <div class="col col-md-4">
-                                <label>TIN</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="TIN" placeholder="TIN">
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>VRN</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="VRN" placeholder="VRN">
-                            </div>
-                        </div><br> -->
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Jumla</label>
-                            </div>
-                            <div class="col col-md-8">
-
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Total Amount</label>
+                            <div class="col-sm-8">
                                 @foreach(session('cart') as $id => $details )
                                 <input type="hidden" name="product[]" value="{{ $details['id'] }}">
-
                                 <input type="hidden" name="quantity[]" value="{{ $details['quantity'] }}">
                                 <input type="hidden" name="pprofit[]" value="{{ $details['pprofit'] }}">
                                 <input type="hidden" name="amount[]" value="{{ $details['net_amount'] }}">
                                 @endforeach
-                                <input type="text" name="total_amount" class="form-control" value=" {{ $total }}"
+                                <input type="number" class="form-control" name="total_amount" value="{{ $total }}"
                                     readonly>
-
                             </div>
-                        </div><br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Idadi ya Bidhaa</label>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Quantity</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="total_quantity" value="{{ $quantity }}"
+                                    readonly>
                             </div>
-                            <div class="col col-md-8">
-                                <input type="number" min="0" name="total_quantity" class="form-control"
-                                    value="{{ $quantity }}" readonly>
-                            </div>
-                        </div><br>
-                        <div class="row">
-                            @can('ongeza-punguzo')
-                            <div class="col col-md-4">
-                                <label>Punguzo/Discount</label>
-                            </div>
-
-                            <div class="col col-md-8">
-                                <input type="number" min="0" value="0" name="discount" class="form-control">
-                            </div>
-                            @endcan
-                        </div><br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>VAT %</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="number" min="0" value="0" name="vat" class="form-control">
-                            </div>
-                        </div><br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Malipo</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <select name="status" id="" class="form-control">
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Payment</label>
+                            <div class="col-sm-8">
+                                <select name="status" class="form-control" required>
                                     <option value="">...</option>
                                     <option value="IMEUZWA">cash</option>
                                     <option value="MKOPO">mkopo</option>
@@ -451,12 +375,41 @@
 
                             </div>
                         </div>
-                        </p>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Customer Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="customer_name" class="form-control"
+                                    placeholder="Enter customer Name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Phone Number</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="phonenumber"
+                                    placeholder="Enter Phone number">
+                            </div>
+                        </div>
+
+                        @can('ongeza-punguzo')
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Discount</label>
+                            <div class="col-sm-8">
+                                <input type="number" min="0" value="0" name="discount" class="form-control">
+                            </div>
+                        </div>
+                        @endcan
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">VAT %</label>
+                            <div class="col-sm-8">
+                                <input type="number" min="0" value="0" name="vat" class="form-control">
+                            </div>
+                        </div>
+
+
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
-
-                        <button type="submit" name="sell" class="btn btn-primary">Uza</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" name="sell" class="btn btn-primary">Submit</button>
                     </div>
 
                 </div>
@@ -473,111 +426,78 @@
             <div class="modal-dialog modal-mdd">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Order</h4>
+                        <h4 class="modal-title">Add Order</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <!-- <p>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Mteja</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="customer_name"
-                                    placeholder="Jina la mteja">
-                            </div>
-                        </div><br>
-                        <div class="row">
-
-                            <div class="col col-md-4">
-                                <label>Anuani</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="address" placeholder="Anuani">
-                            </div>
-                        </div>
-                        <br> -->
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Namba ya simu</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="phonenumber" placeholder="Namba Ya simu">
-                            </div>
-                        </div>
-                        <br>
-                        <!-- <div class="row">
-                            <div class="col col-md-4">
-                                <label>TIN</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="TIN" placeholder="TIN">
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>VRN</label>
-                            </div>
-                            <div class="col col-md-8">
-                                <input type="text" class="form-control" name="VRN" placeholder="VRN">
-                            </div>
-                        </div><br> -->
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Jumla</label>
-                            </div>
-                            <div class="col col-md-8">
-
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Total Amount</label>
+                            <div class="col-sm-8">
                                 @foreach(session('cart') as $id => $details )
                                 <input type="hidden" name="product[]" value="{{ $details['id'] }}">
-
                                 <input type="hidden" name="quantity[]" value="{{ $details['quantity'] }}">
                                 <input type="hidden" name="pprofit[]" value="{{ $details['pprofit'] }}">
                                 <input type="hidden" name="amount[]" value="{{ $details['net_amount'] }}">
                                 @endforeach
-
-                                <input type="text" name="total_amount" class="form-control" value=" {{ $total }}"
+                                <input type="number" class="form-control" name="total_amount" value="{{ $total }}"
                                     readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Quantity</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="total_quantity" value="{{ $quantity }}"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row" style="display:none;">
+                            <label class="col-sm-4 col-form-label">Payment</label>
+                            <div class="col-sm-8">
+                                <select name="status" class="form-control" >
+                                    <option value="">...</option>
+                                    <option value="IMEUZWA">cash</option>
+                                    <option value="MKOPO">mkopo</option>
+                                </select>
 
                             </div>
-                        </div><br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>Idadi ya Bidhaa</label>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Customer Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="customer_name" class="form-control"
+                                    placeholder="Enter customer Name">
                             </div>
-                            <div class="col col-md-8">
-                                <input type="number" min="0" name="total_quantity" class="form-control"
-                                    value="{{ $quantity }}" readonly>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Phone Number</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="phonenumber"
+                                    placeholder="Enter Phone number">
                             </div>
-                        </div><br>
-                        <div class="row">
-                            @can('ongeza-punguzo')
-                            <div class="col col-md-4">
-                                <label>Punguzo/Discount</label>
-                            </div>
-                            <div class="col col-md-8">
+                        </div>
+
+                        @can('ongeza-punguzo')
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Discount</label>
+                            <div class="col-sm-8">
                                 <input type="number" min="0" value="0" name="discount" class="form-control">
                             </div>
-                            @endcan
-                        </div><br>
-                        <div class="row">
-                            <div class="col col-md-4">
-                                <label>VAT %</label>
-                            </div>
-                            <div class="col col-md-8">
+                        </div>
+                        @endcan
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">VAT %</label>
+                            <div class="col-sm-8">
                                 <input type="number" min="0" value="0" name="vat" class="form-control">
                             </div>
                         </div>
-                        <input type="hidden" value="HAIJAUZWA" name="status">
-                        </p>
+
+
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Funga</button>
-
-                        <button type="submit" name="sell" class="btn btn-primary">Uza</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" name="sell" class="btn btn-primary">Submit</button>
                     </div>
 
                 </div>

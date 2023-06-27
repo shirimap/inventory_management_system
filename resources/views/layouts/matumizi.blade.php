@@ -151,7 +151,7 @@
                                         <form method="POST" action="matumizi/edit/{{ $expense->id }}">
                                             {{ csrf_field() }}
 
-                                            <input type="hidden" name="proid" value="{{ $expense->id }}">
+                                            <input type="hidden" name="id" value="{{ $expense->id }}">
                                             <div class="row">
                                                 <div class="col col-md-12">
                                                     <label>Description</label>

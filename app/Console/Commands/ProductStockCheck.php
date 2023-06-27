@@ -6,6 +6,9 @@ use Illuminate\Console\Command;
 use App\Models\Sbidhaa;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Expense;
+use App\Models\Debt;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Http;
 class ProductStockCheck extends Command
 {
@@ -48,7 +51,13 @@ class ProductStockCheck extends Command
         $currentDate= date('Y-m-d');
        
         $products = Product::all();
-        $pius= Order::select('total_amount')->whereDate('created_at',$currentDate)->where('status','IMEUZWA')->sum('total_amount');
+        // $s = Order::where('status','IMEUZWA')->sum('total_amount'); 
+        $today= Order::select('total_amount')->whereDate('created_at',$currentDate)->where('status','IMEUZWA')->sum('total_amount');
+        $t= Payment::select('amount')->whereDate('created_at',$currentDate)->sum('amount');
+        $pius=$today+$t;
+        $madeni=Debt::select('amount')->whereDate('created_at',$currentDate)->sum('amount');
+        $matumizi=Expense::select('amount')->whereDate('created_at',$currentDate)->sum('amount');
+        //$pius= Order::select('total_amount')->whereDate('created_at',$currentDate)->where('status','IMEUZWA')->sum('total_amount');
        // $pius =Sell::whereBetween('created_at',array($fromDate." 00:00:00",$toDate." 23::59:59"))->where('status','IMEUZWA')->sum('total_amount');
         foreach ($products as $product) {
             if ($product->quantity <= $product->sbidhaa->threshold) {
@@ -59,7 +68,7 @@ class ProductStockCheck extends Command
         
         if (!empty($productsOutOfStock)) {
             $phone_number = 756007671; // Replace with the actual phone number to send the SMS
-            $sms = 'hello,The following products are out of stock: ' . implode(', ', $productsOutOfStock).'\ln the amount told is:'.$pius;
+            $sms = 'Habari,Bidhaa zimekaribia kuisha: ' . implode(', ', $productsOutOfStock).'MATUMIZI:'. $matumizi.'MADENI:'.$madeni.'MAUZO:'.$pius;
 
             $url = 'http://smsportal.imartgroup.co.tz/app/smsapi/index.php';
             $params = [

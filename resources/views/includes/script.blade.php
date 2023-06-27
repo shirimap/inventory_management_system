@@ -1,4 +1,4 @@
-<!-- ./wrapper -->
+
 
 <!-- jQuery -->
 <script src="{{URL::asset('plugins/jquery/jquery.min.js')}}"></script>
@@ -35,6 +35,22 @@ $.widget.bridge('uibutton', $.ui.button)
 <!-- AdminLTE for demo purposes -->
 <script src="{{URL::asset('dist/js/demo.js')}}"></script>
 
+<!-- jQuery -->
+<script src="{{asset('plugins/jquery/jquery.min.js')}}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{asset('plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<!-- AdminLTE App -->
+<script src="{{asset('dist/js/adminlte.min.js')}}"></script>
+<!-- FLOT CHARTS -->
+<script src="{{asset('plugins/flot/jquery.flot.js')}}"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="{{asset('plugins/flot/plugins/jquery.flot.resize.js')}}"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="{{asset('plugins/flot/plugins/jquery.flot.pie.js')}}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{asset('dist/js/demo.js')}}"></script>
+<!-- Page specific script -->
+
 
 
 
@@ -65,109 +81,40 @@ $(function() {
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,
-        "buttons": ["csv", "excel", "pdf", "print"]
+        "buttons": ["csv", "excel", "pdf", "print"],
+        "pageLength": 10 // Show 10 rows per page
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    
     $('#example2').DataTable({
         "paging": true,
-        "lengthChange": false,
-        "searching": false,
-        "ordering": true,
-        "info": true,
-        "autoWidth": false,
-        "responsive": true,
-    });
-    $('#example3').DataTable({
-        "paging": true,
-        "lengthChange": false,
+        "lengthChange": true, // Allow changing the number of rows per page
         "searching": true,
         "ordering": true,
         "info": true,
         "autoWidth": false,
         "responsive": true,
+        // "displayStart": 5, // Display starting from the 5th row
+        "pageLength": 10 // Show 10 rows per page
+    });
+    
+    $('#example3').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        // "displayStart": 15, // Display starting from the 15th row
+        "pageLength": 10 // Show 10 rows per page
     });
 });
-</script>
 
 </script>
-<script>
-$(function() {
-    //Initialize Select2 Elements
-    $('.select2').select2()
 
-    //Initialize Select2 Elements
-    $('.select2bs4').select2({
-        theme: 'bootstrap4'
-    })
 
-    //Datemask dd/mm/yyyy
-    $('#datemask').inputmask('dd/mm/yyyy', {
-        'placeholder': 'dd/mm/yyyy'
-    })
-    //Datemask2 mm/dd/yyyy
-    $('#datemask2').inputmask('mm/dd/yyyy', {
-        'placeholder': 'mm/dd/yyyy'
-    })
-    //Money Euro
-    $('[data-mask]').inputmask()
 
-    //Date range picker
-    $('#reservationdate').datetimepicker({
-        format: 'L'
-    });
-    //Date range picker
-    $('#reservation').daterangepicker()
-    //Date range picker with time picker
-    $('#reservationtime').daterangepicker({
-        timePicker: true,
-        timePickerIncrement: 30,
-        locale: {
-            format: 'MM/DD/YYYY hh:mm A'
-        }
-    })
-    //Date range as a button
-    $('#daterange-btn').daterangepicker({
-            ranges: {
-                'Leo': [moment(), moment()],
-                'Jana': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Siku 7 zilizopita': [moment().subtract(6, 'days'), moment()],
-                'Siku 30 zilizopita': [moment().subtract(29, 'days'), moment()],
-                'Mwezi huu': [moment().startOf('month'), moment().endOf('month')],
-                'Mwezi uliopita': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
-                    'month').endOf('month')]
-            },
-            $fromDate: moment().subtract(29, 'days'),
-            $toDate: moment()
-        },
-        function(start, end) {
-            $('#reportrange span').html(fromDate.format('MMMM D, YYYY') + ' - ' + toDate.format('MMMM D, YYYY'))
-        }
-    )
-
-    //Timepicker
-    $('#timepicker').datetimepicker({
-        format: 'LT'
-    })
-
-    //Bootstrap Duallistbox
-    $('.duallistbox').bootstrapDualListbox()
-
-    //Colorpicker
-    $('.my-colorpicker1').colorpicker()
-    //color picker with addon
-    $('.my-colorpicker2').colorpicker()
-
-    $('.my-colorpicker2').on('colorpickerChange', function(event) {
-        $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
-    });
-
-    $("input[data-bootstrap-switch]").each(function() {
-        $(this).bootstrapSwitch('state', $(this).prop('checked'));
-    });
-
-})
 </script>
-
-
 
 
 

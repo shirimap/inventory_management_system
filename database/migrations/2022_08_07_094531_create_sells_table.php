@@ -14,9 +14,6 @@ class CreateSellsTable extends Migration
     public function up()
     {
         Schema::create('sells', function (Blueprint $table) {
-
-
-
             $table->id();
             $table->String('customer_name')->nullable()->default(NULL);
             $table->String('address')->nullable()->default(NULL);
@@ -27,7 +24,7 @@ class CreateSellsTable extends Migration
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->float('discount')->default(0);
             $table->float('quantity');
-            $table->float('amount');
+            $table->float('total_amount');
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable()->default(NULL);
         });

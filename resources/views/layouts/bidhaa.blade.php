@@ -29,7 +29,6 @@
 
     <!-- Main content -->
     <section class="content">
-
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
         </div>
@@ -45,7 +44,7 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="example3" class="table table-hover">
+                <table id="example3" class="table table-sm table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -84,7 +83,6 @@
                                 @else
                                 <b>{{number_format($p->net_amount)}}</b>
                                 @endif
-
                             </td>
 
                             @endif

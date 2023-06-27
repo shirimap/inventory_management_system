@@ -10,12 +10,12 @@
             <div class="row mb-2">
                 <!-- alert -->
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><span class="fa fa-th"></span> Madeni</h1>
+                    <h1 class="m-0 text-dark"><span class="fa fa-th"></span> Debt</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Nyumbani</a></li>
-                        <li class="breadcrumb-item active">Madeni</li>
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Debt</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -36,101 +36,58 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Payment No</th>
                                 <th>Customer</th>
+                                <th>Phone number</th>
                                 <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Small Price</th>
-                                <th>Discount</th>
-                                <th>Total Price</th>
-                                <th>VAT % </th>
-                                <th>Net Price</th>
-                                <th>INvoice Number</th>
+                                <th>Debt Amount</th>                               
                                 <th>Date</th>
                                 <th>Action</th>
-
                             </tr>
                         </thead>
                         <tbody>
 
-                            @foreach($group as $sel=> $sell)
+                            @foreach($loan as $q)
                             <tr>
-                                <td>
-                                    {{ $loop->iteration }}
-                                </td>
-                                @foreach ($sell as $p)
-                                <td> @foreach ($p as $q)
-                                    {{ $q['order']['customer_name'] }}
-                                    @endforeach
-                                </td>
-
-                                <td> @foreach ($p as $q)
-                                    {{ $q['order']['total_quantity'] }}
-                                    @endforeach
-                                </td>
-                                <td>
-                                    @foreach ($p as $q)
-                                    {{ $q['product']['amount'] }} <br>
-                                    @endforeach
-                                </td>
-                                <td>
-                                    @foreach ($p as $q)
-                                    {{ $q['product']['amount']* $q['quantity'] }} <br><br>
-                                    @endforeach
-                                </td>
-
-
-                                <td>{{ $q['order']['discount'] }}</td>
-                                <td>{{ $q['order']['org_amount']}}</td>
-                                <td>{{ $q['order']['vat'] }}</td>
-                                <td>{{ $q['order']['total_amount'] }}</td>
-                                <td>INV-{{ str_pad( $q['order']['id'],5,'0',STR_PAD_LEFT )}}</td>
-                                <td>{{ $q['order']['created_at']->format('d/m/Y') }}<br>{{ $q['order']['created_at']->format('h:m a') }}
-                                </td>
-
-
-                                @endforeach
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{$q->order_id}}</td>
+                                <td>{{ $q['order']['customer_name'] }}</td>
+                                <td>{{ $q['order']['phonenumber'] }}</td>                                
+                                <td><b>{{ $q['order']['total_amount'] }}</b></td>
+                                <td>{{ $q->amount }}</td>
+                                <td>{{$q->created_at}}</td>
 
                                 <td>
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal"
-                                        data-target="#modal-md"><span class="fa fa-minus"></span> Hariri Deni</button>
-
-                                    <a href="{{ route('viewPDF',$sel) }}" target="" class="btn btn-sm btn-warning"><i
-                                            class="fas fa-print"></i></a>
-
+                                    <button class="btn btn-sm btn-success" data-toggle="modal"
+                                        data-target="#modal-md">History</button>
+                                    <button class="btn btn-sm btn-success" data-toggle="modal"
+                                        data-target="#modal-md{{$q->order_id}}">Payment</button>
                                 </td>
 
                                 <!-- /.content -->
-                                <form action="checkout" method="POST">
-                                    @csrf
-                                    <div class="modal fade" id="modal-md">
-                                        <div class="modal-dialog modal-md">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Debits</h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
+                                <!-- /.content-wrapper -->
 
-                                                    <div class="row">
-                                                        <div class="col col-md-4">
-                                                            <label>Customer</label>
-                                                        </div>
-                                                        <div class="col col-md-8">
-                                                            <input type="text" class="form-control" name="customer_name"
-                                                                value="{{ $q['order']['customer_name'] }}">
-                                                        </div>
-                                                    </div>
-                                                    <br>
+                                <div class="modal fade" id="modal-md{{$q->order_id}}">
+                                    <div class="modal-dialog modal-md">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Debits for {{ $q['order']['customer_name'] }}
+                                                </h4>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="payment" method="POST">
+                                                   @csrf                                                   
+                                                    <input type="hidden" name="order_id" value="{{$q->order_id}}">
                                                     <div class="row">
                                                         <div class="col col-md-4">
                                                             <label>Total Price</label>
                                                         </div>
                                                         <div class="col col-md-8">
-                                                            <input type="text" name="total_amount" class="form-control"
-                                                                value=" {{ $q['order']['total_amount'] }}" readonly>
+                                                            <input type="text" class="form-control" value="{{ $q['order']['total_amount'] }}" readonly>
                                                         </div>
                                                     </div><br>
                                                     <div class="row">
@@ -138,42 +95,40 @@
                                                             <label>Quantity</label>
                                                         </div>
                                                         <div class="col col-md-8">
-                                                            <input type="number" min="0" name="total_quantity"
-                                                                class="form-control"
-                                                                value="{{ $q['order']['total_quantity'] }}" readonly>
+                                                            <input type="text" min="0" class="form-control" value="{{ $q['order']['total_quantity'] }}"
+                                                                readonly>
                                                         </div>
                                                     </div><br>
+
                                                     <div class="row">
                                                         <div class="col col-md-4">
-                                                            <label>Payment</label>
+                                                            <label>Amount</label>
                                                         </div>
                                                         <div class="col col-md-8">
-                                                            <select name="status" id="" class="form-control">
-                                                                <option value="">...</option>
-                                                                <option value="IMEUZWA">Cash</option>
-                                                                <option value="MKOPO">Loan</option>
-                                                            </select>
-
+                                                            <input type="number" min="0" class="form-control"
+                                                                name="paid_amount" placeholder="enter amount paid">
                                                         </div>
-                                                    </div>
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer justify-content-between">
-                                                    <button type="button" class="btn btn-danger"
-                                                        data-dismiss="modal">Cancel</button>
+                                                    </div><br>
 
-                                                    <button type="submit" name="sell"
-                                                        class="btn btn-primary">Save</button>
-                                                </div>
+                                                    </p>
 
                                             </div>
-                                            <!-- /.modal-content -->
+                                            <div class="modal-footer justify-content-between">
+                                                <button type="button" class="btn btn-danger"
+                                                    data-dismiss="modal">Cancel</button>
+                                                <button type="submit" 
+                                                    class="btn btn-primary">Save</button>
+                                            </div>
+                                            </form>
                                         </div>
-                                        <!-- /.modal-dialog -->
+                                        <!-- /.modal-content -->
                                     </div>
-                                    <!-- /.modal -->
-                                </form>
+                                    <!-- /.modal-dialog -->
+                                </div>
+                                <!-- /.modal -->
+                               
                             </tr>
+
                             @endforeach
 
                         </tbody>
@@ -186,5 +141,5 @@
     <!-- /.content -->
 
 </div>
-<!-- /.content-wrapper -->
+
 @include('includes/footer')

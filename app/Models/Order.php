@@ -30,8 +30,10 @@ class Order extends Model
        }
 
        public function sells(){
-
-
         return $this->hasMany(Sell::class);
+       }
+
+       public function debt(){
+        return $this->hasMany(Debt::class);
        }
 }

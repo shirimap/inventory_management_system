@@ -155,7 +155,11 @@ Route::group(['middleware' => 'auth'],function(){
     Route::post('updateCart',[BackendController::class,'updateCart']);
 
     Route::post('mauzo/report',[BackendController::class,'report'])->name('mauzo.report');
-
+    
+    // Route::post('makePayment',[BackendController::class,'makePayment'])->name('makePayment');
+    Route::post('payment',[BackendController::class,'payment']);
+ 
+    
     Route::post('checkout',[BackendController::class,'checkout']);
     Route::post('makeorder',[BackendController::class,'makeorder']);
     Route::get('viewPDF/{id}',[BackendController::class,'viewPDF'])->name('viewPDF');
@@ -172,9 +176,11 @@ Route::group(['middleware' => 'auth'],function(){
     Route::post('deleterole/{id}', [BackendController::class, 'deleterole']);
     Route::post('removeProduct/{id}', [BackendController::class, 'removeProduct'])->name('remove');
 
-    Route::get('report',[BackendController::class, 'report'])->name('report');
+   // Route::post('report',[BackendController::class, 'report'])->name('report');
     Route::get('delete/{id}',[BackendController::class, 'delete'])->name('delete');
 // ------------------------ delete ------------------------- //
+
+
 Route::post('report',[BackendController::class, 'search'])->name('search');
 
 Route::post('editRole/{id}',[BackendController::class, 'editRole']);

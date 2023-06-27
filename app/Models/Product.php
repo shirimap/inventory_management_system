@@ -33,6 +33,7 @@ class Product extends Model
     public function sbidhaa(){
         return $this->belongsTo(Sbidhaa::class);
        }
+       
 
 
        public function category(){

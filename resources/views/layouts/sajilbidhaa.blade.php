@@ -6,34 +6,25 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
+    <!-- /.content-header -->
+    <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <!-- alert -->
-
-                <!-- /alert -->
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"><i class="nav-icon fa fa-th"></i> Register Product</h1>
-                </div><!-- /.col -->
+                    <h1>Register Product</h1>
+                </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Register Product</li>
                     </ol>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
+                </div>
+            </div>
         </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
+    </section>
     <!-- Main content -->
     <section class="content">
 
-        <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
-
-        </div>
         <div class="card card-primary">
             <div class="card-header">
                 <h3 class="card-title"><i class="nav-icon fa fa-th"></i> Registered Products</h3>
@@ -44,7 +35,7 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="example3" class="table table-hover">
+                <table id="example2" class="table table-striped">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -70,8 +61,9 @@
                                 @endcan
                                 @can('futa-bidhaa')
                                 <a type="button" class="btn btn-sm btn-danger" style="color:white;" data-toggle="modal"
-                                    data-target="#modal-danger{{ $p->id }}"><i class="fa fa-trash"></i></a>
+                                    data-target="#modal-danger{{ $p->id }}" id="delete"><i class="fa fa-trash"></i></a>
                                 @endcan
+
                             </td>
                             <div class="modal fade" id="modal-danger{{ $p->id }}">
                                 <div class="modal-dialog">
@@ -140,7 +132,7 @@
                                                             value="{{ $p->threshold }}" required>
                                                     </div>
                                                 </div>
-                                                
+
                                         </div>
                                         <div class="modal-footer justify-content-between">
                                             <button type="button" class="btn btn-danger"
@@ -166,53 +158,53 @@
             </div>
             <!-- /.card-body -->
         </div>
-
-
-        <!-- /.row -->
-</div><!-- /.container-fluid -->
-</section>
-<!-- /.content -->
-<form method="post" action="sajilbidhaa/add">
-    @csrf
-    <div class="modal fade" id="modal-lg1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <h4 class="modal-title"><span class="fa fa-plus"></span> Register New Product</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                    <div class="row">
-                        <div class="col col-md-6">
-                            <label>Product Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="Weka Jina la bidhaa...">
+        <!-- /.content -->
+        <form method="post" action="sajilbidhaa/add">
+            @csrf
+            <div class="modal fade" id="modal-lg1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title"><span class="fa fa-plus"></span> Register New Product</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                        <div class="col col-md-6">
-                            <label>Type</label>
-                            <input type="text" name="type" class="form-control" placeholder="Weka aina ya bidhaa...">
+                        <div class="modal-body">
+                            <p>
+                            <div class="row">
+                                <div class="col col-md-6">
+                                    <label>Product Name</label>
+                                    <input type="text" name="name" class="form-control"
+                                        placeholder="Weka Jina la bidhaa...">
+                                </div>
+                                <div class="col col-md-6">
+                                    <label>Type</label>
+                                    <input type="text" name="type" class="form-control"
+                                        placeholder="Weka aina ya bidhaa...">
+                                </div>
+                                <div class="col col-md-12">
+                                    <label>Stock Level</label>
+                                    <input type="number" name="threshold" class="form-control"
+                                        placeholder="Weka idadi Inayotakiwa..." required>
+                                </div>
+                            </div>
+                            </p>
                         </div>
-                        <div class="col col-md-12">
-                            <label>Stock Level</label>
-                            <input type="number" name="threshold" class="form-control" placeholder="Weka idadi Inayotakiwa..."required>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                            <button name="addproduct" class="btn btn-primary">Register</button>
                         </div>
                     </div>
-                    </p>
+                    <!-- /.modal-content -->
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button name="addproduct" class="btn btn-primary">Register</button>
-                </div>
+                <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-</form>
+            <!-- /.modal -->
+        </form>
+    </section>
 
 
 
-@include('includes/footer')
+
+    @include('includes/footer')

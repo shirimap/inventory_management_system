@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command(ProductStockCheck::class)
-                ->dailyAt('14:37');
+                ->dailyAt('11:40');
       
     }
 
